@@ -1,8 +1,13 @@
 package com.jvavateam.carsharingapp.dto.car;
 
 import com.jvavateam.carsharingapp.model.Car;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public record CarDtoRequest(String model, String brand, int inventory,
-                            BigDecimal dailyFee, Car.Type type) {
+public record CarDtoRequest(@NotNull String model,
+                            @NotNull String brand,
+                            @Min(1) int inventory,
+                            @NotNull @Min(0) BigDecimal dailyFee,
+                            @NotNull Car.Type type) {
 }
