@@ -27,7 +27,7 @@ public class Rental {
     private LocalDate rentalDate;
     private LocalDate returnDate;
     private LocalDate actualReturnDate;
-    /*@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "car_id", nullable = false)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -36,5 +36,5 @@ public class Rental {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private User user;*/
+    private User user;
 }
