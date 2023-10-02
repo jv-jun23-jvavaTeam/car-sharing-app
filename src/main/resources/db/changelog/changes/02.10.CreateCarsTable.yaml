@@ -30,7 +30,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: daily_fee
-                  type: numeric
+                  type: decimal(10,2)
                   constraints:
                     nullable: false
               - column:
