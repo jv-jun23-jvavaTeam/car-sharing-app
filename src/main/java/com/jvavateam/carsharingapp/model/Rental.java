@@ -25,14 +25,17 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "renatal_date", nullable = false)
     private LocalDate rentalDate;
+    @Column(name = "return_date", nullable = false)
     private LocalDate returnDate;
+    @Column(name = "actual_return_date", nullable = false)
     private LocalDate actualReturnDate;
-    /*@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "car_id", nullable = false)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Car car;*/
+    private Car car;
     @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @EqualsAndHashCode.Exclude
