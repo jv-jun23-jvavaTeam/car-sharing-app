@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -38,6 +39,7 @@ public class Payment {
     @Column(nullable = false, unique = true)
     private String sessionId;
     @Column(nullable = false)
+    @Min(1)
     private BigDecimal amountToPay;
     @Column(nullable = false)
     private boolean isDeleted = false;
