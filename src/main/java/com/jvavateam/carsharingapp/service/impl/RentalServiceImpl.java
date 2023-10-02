@@ -2,6 +2,7 @@ package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.mapper.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
@@ -18,12 +19,13 @@ import org.springframework.stereotype.Service;
 public class RentalServiceImpl implements RentalService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
+    private final RentalMapper rentalMapper;
 
 
     @Override
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
-        Rental rental = new Rental();
-        rental.setRentalDate(createRentalDto.rentalDate());
+        Rental rental = rentalMapper.toModel(createRentalDto);
+
         Optional<Car> possibleCar = carRepository.findById(createRentalDto.carId());
         // or from userService
         Optional<User> possibleUser = userRepository.findById(createRentalDto.userId());
