@@ -6,10 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import java.math.BigDecimal;
 
 @Entity
 @Data
@@ -28,8 +28,12 @@ public class Car {
     private int inventory;
     @Column(nullable = false)
     private BigDecimal dailyFee;
+    @Column(nullable = false)
+    private Type type;
+    @Column(nullable = false)
     private boolean isDeleted = false;
-    enum Type {
+
+    public enum Type {
         SEDAN, SUV, HATCHBACK, UNIVERSAL
     }
 }
