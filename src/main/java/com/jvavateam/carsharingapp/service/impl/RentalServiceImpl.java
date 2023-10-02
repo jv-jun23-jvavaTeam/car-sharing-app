@@ -27,7 +27,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public RentalResponseDto update() {
+    public RentalResponseDto completeRental() {
         return null;
     }
 }
