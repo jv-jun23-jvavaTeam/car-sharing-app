@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,4 +38,6 @@ public class Rental {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private User user;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
 }
