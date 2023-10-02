@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import lombok.Data;
 import org.hibernate.annotations.SQLDelete;
@@ -16,41 +15,28 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Data
-@SQLDelete(sql = "UPDATE payments SET is_deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE cars SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
-@Table(name = "payments")
-public class Payment {
+@Table(name = "cars")
+public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
-    @Enumerated(EnumType.STRING)
+    private String model;
     @Column(nullable = false)
+    private String brand;
+    @Column(nullable = false)
+    private int inventory;
+    @Column(nullable = false)
+    private BigDecimal dailyFee;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Type type;
-    /*@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "rental_id", nullable = false)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Rental rental;*/
-    @Column(nullable = false, unique = true)
-    private String sessionUrl;
-    @Column(nullable = false, unique = true)
-    private String sessionId;
-    @Column(nullable = false)
-    @Min(1)
-    private BigDecimal amountToPay;
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    public enum Status {
-        PENDING,
-        PAID
-    }
-
     public enum Type {
-        PAYMENT,
-        FINE
+        SEDAN, SUV, HATCHBACK, UNIVERSAL
     }
 }
