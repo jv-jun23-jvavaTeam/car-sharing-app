@@ -3,7 +3,6 @@ package com.jvavateam.carsharingapp.service.impl;
 import com.jvavateam.carsharingapp.dto.role.RoleRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserResponseDto;
-import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.exception.RegistrationException;
 import com.jvavateam.carsharingapp.mapper.user.UserMapper;
 import com.jvavateam.carsharingapp.model.Role;
