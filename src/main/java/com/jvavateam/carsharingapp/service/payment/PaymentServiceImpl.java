@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,7 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private PaymentTotalCalculator calculator;
-   /* @Value("${stripe.secretKey}")
+    /* @Value("${stripe.secretKey}")
     private String stripeKey;*/
 
     @Override
@@ -47,8 +46,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto)
             throws StripeException {
-        Stripe.apiKey = "sk_test_51NwiEDEIBCpzUnxfXJ4R27LqvTzdcSEWcVw19qwAYqaR8ReA" +
-                "iW6LmVZkemAIIWJi3VJtu59lzow6OYDJVRoHSljg00d83TMgeW";
+        Stripe.apiKey = "sk_test_51NwiEDEIBCpzUnxfXJ4R27LqvTzdcSEWcVw19qwAYqaR8ReA"
+                + "iW6LmVZkemAIIWJi3VJtu59lzow6OYDJVRoHSljg00d83TMgeW";
 
         Payment payment = paymentMapper.toEntity(requestDto);
         /*  payment.setRental(this.RENTAL);
