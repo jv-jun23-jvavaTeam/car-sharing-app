@@ -25,11 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
         description = "Endpoints for managing user orders")
 public class RentalController {
     private final RentalService rentalService;
-    //private final NotificationService notificationService;
-    //private final PaymentService paymentService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
     public CreateRentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
@@ -37,6 +35,7 @@ public class RentalController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals",
             description = "Get rentals by user ID and whether the rental is still active or not")
     public List<CreateRentalResponseDto> getAll() {
@@ -44,6 +43,7 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get user rental by id",
             description = "Get specific rental")
     public CreateRentalResponseDto get(@PathVariable Long id) {
@@ -51,6 +51,7 @@ public class RentalController {
     }
 
     @PostMapping("/rentals/{id}/return")
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update rental return date",
             description = "Set actual return date (increase car inventory by 1)")
     public RentalReturnResponseDto completeRental() {
