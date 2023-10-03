@@ -6,6 +6,7 @@ import com.jvavateam.carsharingapp.dto.user.UserRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserResponseDto;
 import com.jvavateam.carsharingapp.security.AuthenticationService;
 import com.jvavateam.carsharingapp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,16 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Register endpoint",
+            description = "Register a new user with valid credentials")
     public UserResponseDto register(@Valid @RequestBody UserRequestDto request) {
         return userService.register(request);
     }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Login endpoint",
+            description = "Authenticate user with valid credentials")
     public UserLoginResponseDto login(@Valid @RequestBody UserLoginRequestDto request) {
         return authenticationService.authenticate(request);
     }
