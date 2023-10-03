@@ -2,6 +2,7 @@ package com.jvavateam.carsharingapp.service.payment;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
+import com.jvavateam.carsharingapp.exception.PaymentException;
 import com.jvavateam.carsharingapp.mapper.payment.PaymentMapper;
 import com.jvavateam.carsharingapp.model.Payment;
 import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
@@ -61,7 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
         payment.setAmountToPay(BigDecimal.valueOf(500L));
-        //paymentRepository.save(payment);
+        paymentRepository.save(payment);
         PaymentResponseDto responseDto = paymentMapper.toDto(payment);
         return responseDto;
     }
@@ -96,7 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
         return getSession(price);
     }
 
-    private Session getSession(Price price) throws StripeException {
+    private Session getSession(Price price) {
         SessionCreateParams sessionCreateParams = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .addLineItem(SessionCreateParams.LineItem.builder()
@@ -109,26 +110,41 @@ public class PaymentServiceImpl implements PaymentService {
                         + "?sessionId={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(baseApiUrl + apiCancelEndpoint)
                 .build();
-        Session session = Session.create(sessionCreateParams);
+        Session session = null;
+        try {
+            session = Session.create(sessionCreateParams);
+        } catch (StripeException e) {
+            throw new PaymentException("Session " + session.getId() + " creation went wrong", e);
+        }
         return session;
     }
 
-    private static Price getPrice(Product product) throws StripeException {
+    private static Price getPrice(Product product) {
         PriceCreateParams priceParams = PriceCreateParams.builder()
                 .setCurrency(CURRENCY_NAME)
                 .setProduct(product.getId())
                 .setUnitAmount(500L)
                 .build();
-        Price price = Price.create(priceParams);
+        Price price = null;
+        try {
+            price = Price.create(priceParams);
+        } catch (StripeException e) {
+            throw new PaymentException("Price " + price.getId() + " creation went wrong", e);
+        }
         return price;
     }
 
-    private Product getProduct(String carName) throws StripeException {
+    private Product getProduct(String carName) {
         ProductCreateParams productParams = new ProductCreateParams.Builder()
                 .setName(carName)
                 .build();
-        
-        return Product.create(productParams);
+        Product product = new Product();
+        try {
+            product = Product.create(productParams);
+        } catch (StripeException e) {
+            throw new PaymentException("Product " + product.getId() + " creation went wrong", e);
+        }
+        return product;
     }
 
     private String getCarName(Payment payment) {
