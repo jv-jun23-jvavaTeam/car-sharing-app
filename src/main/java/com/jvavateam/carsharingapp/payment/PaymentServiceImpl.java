@@ -34,7 +34,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private PaymentTotalCalculator calculator;
-
     @Value("${stripe.secretKey}")
     private String stripeKey;
 
