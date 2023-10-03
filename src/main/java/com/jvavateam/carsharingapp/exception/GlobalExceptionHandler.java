@@ -1,6 +1,5 @@
 package com.jvavateam.carsharingapp.exception;
 
-
 import com.jvavateam.carsharingapp.dto.exception.ErrorResponseDto;
 import com.jvavateam.carsharingapp.dto.exception.ErrorResponseListDto;
 import io.jsonwebtoken.JwtException;
@@ -116,7 +115,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-
 
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
         ErrorResponseDto errorResponse = new ErrorResponseDto();
