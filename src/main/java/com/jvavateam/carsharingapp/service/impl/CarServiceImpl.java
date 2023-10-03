@@ -19,7 +19,6 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarDtoResponse create(CarDtoRequest carDto) {
         return carMapper.toDto(carRepository.save(carMapper.toEntity(carDto)));
-    }
 
     @Override
     public CarDtoResponse getById(Long id) {
