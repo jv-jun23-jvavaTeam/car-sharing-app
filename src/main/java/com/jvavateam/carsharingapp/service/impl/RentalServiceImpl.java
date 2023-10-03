@@ -20,9 +20,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +48,9 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
                                           Pageable pageable) {
-        User currentUser = getAuthenticatedUser();
+        User currentUser = userRepository.getCurrentUser();
         if (!isManager(currentUser)) {
-            Long searchUserId = searchParameters.userId();
-            checkUserId(currentUser, searchUserId);
+            checkUserAccess(currentUser);
         }
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
@@ -117,15 +113,9 @@ public class RentalServiceImpl implements RentalService {
     }
 
     private void checkUserAccess(User user) {
-        Long currentUserId = getAuthenticatedUser().getId();
+        Long currentUserId = userRepository.getCurrentUser().getId();
         if (!user.getId().equals(currentUserId)) {
             throw new InvalidRequestParametersException("Wrong user id entered: " + user.getId());
-        }
-    }
-
-    private void checkUserId(User currentUser, Long userId) {
-        if (userId == null || currentUser.getId().equals(userId)) {
-            throw new InvalidRequestParametersException("Permission denied");
         }
     }
 
@@ -133,14 +123,5 @@ public class RentalServiceImpl implements RentalService {
         if (actualCar.getInventory() < 1) {
             throw new EntityNotFoundException("Can`t create new rental: This car is absent");
         }
-    }
-
-    public UserDetails getAuthenticatedUserDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (UserDetails) authentication.getPrincipal();
-    }
-
-    public User getAuthenticatedUser() {
-        return (User) getAuthenticatedUserDetails();
     }
 }

@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RentalRepository extends JpaRepository<Rental, Long>, JpaSpecificationExecutor<Rental> {
+public interface RentalRepository extends JpaRepository<Rental, Long>,
+        JpaSpecificationExecutor<Rental> {
 
     @EntityGraph(attributePaths = {"Rental.car", "Rental.user"})
     @Query("FROM Rental r "
