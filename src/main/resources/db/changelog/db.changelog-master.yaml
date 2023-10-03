@@ -11,3 +11,7 @@ databaseChangeLog:
       file: db/changelog/changes/02.10.2023.CreateRentalsTable.yaml
   - include:
       file: db/changelog/changes/02.10.2023.CreateRentalsConnections.yaml
+  - include:
+      file: db/changelog/changes/02.10.2023.create-payment-table.yaml
+  - include:
+      file: db/changelog/changes/03.10.2023.AddRolesToRolesTable.yaml
