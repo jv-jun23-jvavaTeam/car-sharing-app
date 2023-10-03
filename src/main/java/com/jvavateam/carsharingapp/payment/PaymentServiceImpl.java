@@ -3,10 +3,7 @@ package com.jvavateam.carsharingapp.payment;
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
 import com.jvavateam.carsharingapp.mapper.PaymentMapper;
-import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Payment;
-import com.jvavateam.carsharingapp.model.Rental;
-import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.payment.calculator.PaymentCalculationsHandler;
 import com.jvavateam.carsharingapp.payment.calculator.PaymentTotalCalculator;
 import com.jvavateam.carsharingapp.repository.PaymentRepository;
@@ -20,8 +17,6 @@ import com.stripe.param.ProductCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,33 +30,6 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String CANCEL_URL = "http://localhost:8080/api/payments/cancel";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
-    private static Car CAR = new Car(
-            1L,
-            " Model",
-            " Brand",
-            10,
-            new BigDecimal("50.00"),
-            Car.Type.SEDAN,
-            false
-    );
-    private static User USER = new User(
-            null,
-            "user@example.com",
-            "John",
-            "Doe",
-            "password123",
-            new HashSet<>(),
-            false
-    );
-    private static final Rental RENTAL = new Rental(
-            null,
-            LocalDate.of(2023, 10, 10),
-            LocalDate.of(2023, 10, 20),
-            LocalDate.of(2023, 10, 20),
-            CAR,
-            USER,
-            false
-    );
 
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
@@ -72,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto> getAllForCurrentUser() {
-        return paymentRepository.findAllForCurrentUser().stream()
+        return paymentRepository.findAll().stream()
                 .map(paymentMapper::toDto)
                 .toList();
     }
@@ -83,11 +51,11 @@ public class PaymentServiceImpl implements PaymentService {
         Stripe.apiKey = stripeKey;
 
         Payment payment = paymentMapper.toEntity(requestDto);
-        payment.setRental(this.RENTAL);
+        /*  payment.setRental(this.RENTAL);
 
-        String carName = RENTAL.getCar().getBrand() + " " + RENTAL.getCar().getModel();
+        String carName = RENTAL.getCar().getBrand() + " " + RENTAL.getCar().getModel();*/
 
-        Session session = createSession(payment, carName);
+        Session session = createSession(payment, "newCar");
 
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
@@ -128,7 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto> getAllSuccessfulPayments() {
-        return paymentRepository.findAllByStatusForCurrentUser(Payment.Status.PAID)
+        return paymentRepository.findAllByStatus(Payment.Status.PAID)
                 .stream()
                 .map(paymentMapper::toDto)
                 .toList();
@@ -136,7 +104,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto> getAllPausedPayments() {
-        return paymentRepository.findAllByStatusForCurrentUser(Payment.Status.PENDING)
+        return paymentRepository.findAllByStatus(Payment.Status.PENDING)
                 .stream()
                 .map(paymentMapper::toDto)
                 .toList();
