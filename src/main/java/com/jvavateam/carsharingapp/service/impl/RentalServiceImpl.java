@@ -1,7 +1,7 @@
 package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.service.RentalService;
 import java.util.List;
@@ -13,17 +13,17 @@ import org.springframework.stereotype.Service;
 public class RentalServiceImpl implements RentalService {
 
     @Override
-    public CreateRentalResponseDto create(CreateRentalDto createRentalDto) {
+    public RentalResponseDto create(CreateRentalDto createRentalDto) {
         return null;
     }
 
     @Override
-    public List<CreateRentalResponseDto> getAll() {
+    public List<RentalResponseDto> getAll() {
         return null;
     }
 
     @Override
-    public CreateRentalResponseDto getById(Long id) {
+    public RentalResponseDto getById(Long id) {
         return null;
     }
 

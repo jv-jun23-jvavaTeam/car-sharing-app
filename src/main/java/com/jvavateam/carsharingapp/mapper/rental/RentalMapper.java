@@ -2,7 +2,7 @@ package com.jvavateam.carsharingapp.mapper.rental;
 
 import com.jvavateam.carsharingapp.config.MapperConfiguration;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.model.Rental;
 import org.mapstruct.Mapper;
@@ -12,10 +12,12 @@ import org.mapstruct.Mapping;
 public interface RentalMapper {
     @Mapping(target = "carId", source = "car.id")
     @Mapping(target = "userId", source = "user.id")
-    CreateRentalResponseDto toCreateDto(Rental rental);
+    @Mapping(target = "isActive", source = "active")
+    RentalResponseDto toCreateDto(Rental rental);
 
     @Mapping(target = "carId", source = "car.id")
     @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "isActive", source = "active")
     RentalReturnResponseDto toReturnDto(Rental rental);
 
     @Mapping(target = "id", ignore = true)
@@ -24,5 +26,6 @@ public interface RentalMapper {
     @Mapping(target = "car", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "isDeleted", ignore = true)
+    @Mapping(target = "active", ignore = true)
     Rental toModel(CreateRentalDto rentalDto);
 }
