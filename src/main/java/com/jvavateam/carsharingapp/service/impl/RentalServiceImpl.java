@@ -4,9 +4,12 @@ import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
+import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
+import com.jvavateam.carsharingapp.exception.InvalidRequestParametersException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
+import com.jvavateam.carsharingapp.model.Role;
 import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.car.CarRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
@@ -17,6 +20,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,27 +38,27 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
-        Car car = carRepository.findById(createRentalDto.carId())
-                .orElseThrow(() -> new RuntimeException("Car with provided id not found"));
-        if (car.getInventory() < 1) {
-            throw new RuntimeException("Can`t create new rental: This car is absent");
-        }
         User user = userRepository.findById(createRentalDto.userId())
-                .orElseThrow(() -> new RuntimeException("User with provided id not found"));
-        Rental rental = rentalMapper.toModel(createRentalDto);
-        rental.setCar(car);
-        rental.setUser(user);
-        rental.setActive(true);
+                .orElseThrow(() -> new EntityNotFoundException("User with provided id not found"));
+        checkUserAccess(user);
+        Car car = decreaseCarInventory(createRentalDto.carId());
+        Rental rental = buildRental(createRentalDto, car, user);
         Rental savedRental = rentalRepository.save(rental);
-        //DECREASE CAR INVENTORY
         return rentalMapper.toDto(savedRental);
     }
 
     @Override
+    @Transactional
     public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
                                           Pageable pageable) {
+        User currentUser = getAuthenticatedUser();
+        if (!isManager(currentUser)) {
+            Long searchUserId = searchParameters.userId();
+            checkUserId(currentUser, searchUserId);
+        }
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
+
         return rentalRepository.findAll(searchSpecification, pageable).stream()
                 .map(rentalMapper::toDto)
                 .toList();
@@ -61,7 +67,7 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public RentalResponseDto getById(Long id) {
         Rental rental = rentalRepository.getByIdForCurrentUser(id)
-                .orElseThrow(() -> new RuntimeException("Can`t find rental with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Can`t find rental with id: " + id));
         return rentalMapper.toDto(rental);
     }
 
@@ -69,10 +75,72 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public RentalReturnResponseDto completeRental(Long id) {
         Rental rental = rentalRepository.getByIdForCurrentUser(id)
-                .orElseThrow(() -> new RuntimeException("Can`t find rental with id: " + id));
-        //INCREASE CAR INVENTORY
+                .orElseThrow(() -> new EntityNotFoundException("Can`t find rental with id: " + id));
+        Car returnedCar = rental.getCar();
+        increaseCarInventory(returnedCar);
         rental.setActive(false);
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toReturnDto(savedRental);
+    }
+
+    private void increaseCarInventory(Car carForIncreasing) {
+        Long decreasingCarId = carForIncreasing.getId();
+        Car actualCar = carRepository.findById(decreasingCarId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Can`t find car with id: " + decreasingCarId));
+        carForIncreasing.setInventory(actualCar.getInventory() + 1);
+        carRepository.save(carForIncreasing);
+    }
+
+    private Car decreaseCarInventory(Long carIdForDecreasing) {
+        Car actualCar = carRepository.findById(carIdForDecreasing)
+                .orElseThrow(() -> new EntityNotFoundException("Car with provided id not found"));
+        checkCarInventory(actualCar);
+        actualCar.setInventory(actualCar.getInventory() - 1);
+        return carRepository.save(actualCar);
+    }
+
+    private Rental buildRental(CreateRentalDto createRentalDto,
+                               Car actualCar,
+                               User user) {
+        Rental rental = rentalMapper.toModel(createRentalDto);
+        rental.setCar(actualCar);
+        rental.setUser(user);
+        rental.setActive(true);
+        return rental;
+    }
+
+    private boolean isManager(User user) {
+        return user.getRoles()
+                .stream()
+                .anyMatch(role -> role.getName().equals(Role.RoleName.MANAGER));
+    }
+
+    private void checkUserAccess(User user) {
+        Long currentUserId = getAuthenticatedUser().getId();
+        if (!user.getId().equals(currentUserId)) {
+            throw new InvalidRequestParametersException("Wrong user id entered: " + user.getId());
+        }
+    }
+
+    private void checkUserId(User currentUser, Long userId) {
+        if (userId == null || currentUser.getId().equals(userId)) {
+            throw new InvalidRequestParametersException("Permission denied");
+        }
+    }
+
+    private void checkCarInventory(Car actualCar) {
+        if (actualCar.getInventory() < 1) {
+            throw new EntityNotFoundException("Can`t create new rental: This car is absent");
+        }
+    }
+
+    public UserDetails getAuthenticatedUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (UserDetails) authentication.getPrincipal();
+    }
+
+    public User getAuthenticatedUser() {
+        return (User) getAuthenticatedUserDetails();
     }
 }

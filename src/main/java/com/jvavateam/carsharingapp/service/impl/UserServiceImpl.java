@@ -5,7 +5,6 @@ import com.jvavateam.carsharingapp.dto.user.UserResponseDto;
 import com.jvavateam.carsharingapp.mapper.user.UserMapper;
 import com.jvavateam.carsharingapp.model.Role;
 import com.jvavateam.carsharingapp.model.User;
-import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.UserService;
