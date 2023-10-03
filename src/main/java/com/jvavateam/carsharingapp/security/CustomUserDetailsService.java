@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.security;
 
+import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException("User with such email does not exists!"));
+                () -> new EntityNotFoundException("User with such "
+                        + "email does not exists!"));
     }
 }
