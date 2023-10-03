@@ -4,6 +4,7 @@ import com.jvavateam.carsharingapp.dto.user.UserLoginRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserLoginResponseDto;
 import com.jvavateam.carsharingapp.dto.user.UserRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserResponseDto;
+import com.jvavateam.carsharingapp.exception.RegistrationException;
 import com.jvavateam.carsharingapp.security.AuthenticationService;
 import com.jvavateam.carsharingapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,8 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register endpoint",
             description = "Register a new user with valid credentials")
-    public UserResponseDto register(@Valid @RequestBody UserRequestDto request) {
+    public UserResponseDto register(@Valid @RequestBody UserRequestDto request)
+            throws RegistrationException {
         return userService.register(request);
     }
 
