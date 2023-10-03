@@ -38,8 +38,8 @@ public class RentalServiceImpl implements RentalService {
         User user = userRepository.findById(createRentalDto.userId())
                 .orElseThrow(() -> new EntityNotFoundException("User with provided id not found"));
         checkUserAccess(user);
-        Car car = decreaseCarInventory(createRentalDto.carId());
-        Rental rental = buildRental(createRentalDto, car, user);
+        decreaseCarInventory(createRentalDto.carId());
+        Rental rental = rentalMapper.toModel(createRentalDto);
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toDto(savedRental);
     }
@@ -88,22 +88,12 @@ public class RentalServiceImpl implements RentalService {
         carRepository.save(carForIncreasing);
     }
 
-    private Car decreaseCarInventory(Long carIdForDecreasing) {
+    private void decreaseCarInventory(Long carIdForDecreasing) {
         Car actualCar = carRepository.findById(carIdForDecreasing)
                 .orElseThrow(() -> new EntityNotFoundException("Car with provided id not found"));
         checkCarInventory(actualCar);
         actualCar.setInventory(actualCar.getInventory() - 1);
-        return carRepository.save(actualCar);
-    }
-
-    private Rental buildRental(CreateRentalDto createRentalDto,
-                               Car actualCar,
-                               User user) {
-        Rental rental = rentalMapper.toModel(createRentalDto);
-        rental.setCar(actualCar);
-        rental.setUser(user);
-        rental.setActive(true);
-        return rental;
+        carRepository.save(actualCar);
     }
 
     private boolean isManager(User user) {

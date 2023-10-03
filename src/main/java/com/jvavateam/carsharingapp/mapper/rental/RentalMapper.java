@@ -4,9 +4,13 @@ import com.jvavateam.carsharingapp.config.MapperConfiguration;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
+import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
+import com.jvavateam.carsharingapp.model.User;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(config = MapperConfiguration.class)
 public interface RentalMapper {
@@ -28,4 +32,14 @@ public interface RentalMapper {
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "active", ignore = true)
     Rental toModel(CreateRentalDto rentalDto);
+
+    @AfterMapping
+    default void setUpModel(@MappingTarget Rental rental, CreateRentalDto createRentalDto) {
+        Car car = new Car();
+        car.setId(createRentalDto.carId());
+        User user = new User();
+        user.setId(createRentalDto.userId());
+        rental.setCar(car);
+        rental.setUser(user);
+    }
 }
