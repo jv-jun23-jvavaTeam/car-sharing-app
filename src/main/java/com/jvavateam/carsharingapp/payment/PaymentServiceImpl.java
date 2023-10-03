@@ -31,6 +31,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private static final String CURRENCY_NAME = "usd";
+    private static final String SUCCESS_URL = "http://localhost:8080/api/payments/success";
+    private static final String CANCEL_URL = "http://localhost:8080/api/payments/cancel";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
     private static Car CAR = new Car(
@@ -116,8 +118,8 @@ public class PaymentServiceImpl implements PaymentService {
                         .setQuantity(MAX_NUMBER_OF_CARS_TO_RENT)
                         .build())
                 .setExpiresAt(EXPIRATION_TIME)
-                .setSuccessUrl("http://localhost:8080/api/payments/success")
-                .setCancelUrl("http://localhost:8080/api/payments/cancel")
+                .setSuccessUrl(SUCCESS_URL)
+                .setCancelUrl(CANCEL_URL)
                 .build();
 
         Session session = Session.create(sessionCreateParams);
