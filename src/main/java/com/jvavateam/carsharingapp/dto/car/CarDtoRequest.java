@@ -22,6 +22,6 @@ public record CarDtoRequest(
         @Min(0)
         BigDecimal dailyFee,
         @NotNull(message = "Car type cannot be null")
-        @Schema(description = "Car body type", example = "SEDAN")
+        @Schema(description = "Car body type", example = "SUV")
         Car.Type type) {
 }
