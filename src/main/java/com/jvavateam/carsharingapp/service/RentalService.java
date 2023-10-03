@@ -1,15 +1,16 @@
 package com.jvavateam.carsharingapp.service;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import java.util.List;
 
 public interface RentalService {
-    RentalResponseDto create(CreateRentalDto createRentalDto);
+    CreateRentalResponseDto create(CreateRentalDto createRentalDto);
 
-    List<RentalResponseDto> getAll();
+    List<CreateRentalResponseDto> getAll();
 
-    RentalResponseDto getById(Long id);
+    CreateRentalResponseDto getById(Long id);
 
-    RentalResponseDto completeRental();
+    RentalReturnResponseDto completeRental();
 }

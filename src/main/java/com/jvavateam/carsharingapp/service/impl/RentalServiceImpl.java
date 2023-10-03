@@ -1,7 +1,8 @@
 package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.mapper.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
@@ -21,31 +22,28 @@ public class RentalServiceImpl implements RentalService {
     private final UserRepository userRepository;
     private final RentalMapper rentalMapper;
 
-
     @Override
-    public RentalResponseDto create(CreateRentalDto createRentalDto) {
+    public CreateRentalResponseDto create(CreateRentalDto createRentalDto) {
         Rental rental = rentalMapper.toModel(createRentalDto);
 
         Optional<Car> possibleCar = carRepository.findById(createRentalDto.carId());
         // or from userService
         Optional<User> possibleUser = userRepository.findById(createRentalDto.userId());
-        rental.setCar();
-        rental.setUser();
         return null;
     }
 
     @Override
-    public List<RentalResponseDto> getAll() {
+    public List<CreateRentalResponseDto> getAll() {
         return null;
     }
 
     @Override
-    public RentalResponseDto getById(Long id) {
+    public CreateRentalResponseDto getById(Long id) {
         return null;
     }
 
     @Override
-    public RentalResponseDto completeRental() {
+    public RentalReturnResponseDto completeRental() {
         return null;
     }
 }
