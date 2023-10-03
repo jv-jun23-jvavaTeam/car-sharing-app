@@ -13,7 +13,7 @@ public interface RentalMapper {
     @Mapping(target = "carId", source = "car.id")
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "isActive", source = "active")
-    RentalResponseDto toCreateDto(Rental rental);
+    RentalResponseDto toDto(Rental rental);
 
     @Mapping(target = "carId", source = "car.id")
     @Mapping(target = "userId", source = "user.id")
