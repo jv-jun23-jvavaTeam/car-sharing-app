@@ -1,7 +1,8 @@
 package com.jvavateam.carsharingapp.controller;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.service.RentalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,28 +32,28 @@ public class RentalController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
-    public RentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
+    public CreateRentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
         return rentalService.create(createRentalDto);
     }
 
     @GetMapping
     @Operation(summary = "Get all user rentals",
             description = "Get rentals by user ID and whether the rental is still active or not")
-    public List<RentalResponseDto> getAll() {
+    public List<CreateRentalResponseDto> getAll() {
         return rentalService.getAll();
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user rental by id",
             description = "Get specific rental")
-    public RentalResponseDto get(@PathVariable Long id) {
+    public CreateRentalResponseDto get(@PathVariable Long id) {
         return rentalService.getById(id);
     }
 
     @PostMapping("/rentals/{id}/return")
     @Operation(summary = "Update rental return date",
             description = "Set actual return date (increase car inventory by 1)")
-    public RentalResponseDto updateReturnDate() {
+    public RentalReturnResponseDto completeRental() {
         return rentalService.completeRental();
     }
 }
