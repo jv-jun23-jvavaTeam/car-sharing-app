@@ -35,7 +35,6 @@ public class RentalController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals",
             description = "Get rentals by user ID and whether the rental is still active or not")
     public List<CreateRentalResponseDto> getAll() {
@@ -43,7 +42,6 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get user rental by id",
             description = "Get specific rental")
     public CreateRentalResponseDto get(@PathVariable Long id) {
@@ -51,7 +49,6 @@ public class RentalController {
     }
 
     @PostMapping("/rentals/{id}/return")
-    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update rental return date",
             description = "Set actual return date (increase car inventory by 1)")
     public RentalReturnResponseDto completeRental() {
