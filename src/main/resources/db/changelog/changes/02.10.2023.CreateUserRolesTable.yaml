@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-roles-table
+      author: ivan fadieiev
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
