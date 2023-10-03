@@ -27,7 +27,6 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalMapper.toModel(createRentalDto);
 
         Optional<Car> possibleCar = carRepository.findById(createRentalDto.carId());
-        // or from userService
         Optional<User> possibleUser = userRepository.findById(createRentalDto.userId());
         return null;
     }
