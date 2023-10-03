@@ -1,7 +1,7 @@
 package com.jvavateam.carsharingapp.controller;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.service.RentalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,7 @@ public class RentalController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
-    public CreateRentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
+    public RentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
         return rentalService.create(createRentalDto);
     }
 
@@ -38,7 +38,7 @@ public class RentalController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals",
             description = "Get rentals by user ID and whether the rental is still active or not")
-    public List<CreateRentalResponseDto> getAll() {
+    public List<RentalResponseDto> getAll() {
         return rentalService.getAll();
     }
 
@@ -46,7 +46,7 @@ public class RentalController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get user rental by id",
             description = "Get specific rental")
-    public CreateRentalResponseDto get(@PathVariable Long id) {
+    public RentalResponseDto get(@PathVariable Long id) {
         return rentalService.getById(id);
     }
 

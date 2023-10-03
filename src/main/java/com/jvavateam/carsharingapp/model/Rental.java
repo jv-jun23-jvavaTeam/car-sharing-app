@@ -41,6 +41,8 @@ public class Rental {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private User user;
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 }
