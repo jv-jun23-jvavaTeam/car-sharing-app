@@ -2,7 +2,7 @@ package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
-import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
-    private CarRepository carRepository;
-    private UserRepository userRepository;
-    private RentalRepository rentalRepository;
-    private RentalMapper rentalMapper;
+    private final CarRepository carRepository;
+    private final UserRepository userRepository;
+    private final RentalRepository rentalRepository;
+    private final RentalMapper rentalMapper;
 
     @Override
     public CreateRentalResponseDto create(CreateRentalDto createRentalDto) {
@@ -38,6 +38,10 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     public List<CreateRentalResponseDto> getAll() {
+        List<Rental> rentals = rentalRepository.getAllForCurrentUser();
+        List<RentalResponseDto> rentalsDto = rentals.stream()
+                .map(rental -> rentalMapper.toDto(rental))
+                .toList();
         return null;
     }
 
@@ -47,7 +51,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public RentalReturnResponseDto completeRental() {
+    public RentalResponseDto completeRental() {
         return null;
     }
 }

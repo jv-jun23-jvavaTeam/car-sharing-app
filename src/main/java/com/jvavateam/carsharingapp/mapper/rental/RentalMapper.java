@@ -3,7 +3,7 @@ package com.jvavateam.carsharingapp.mapper.rental;
 import com.jvavateam.carsharingapp.config.MapperConfiguration;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
-import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.model.Rental;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,7 +16,7 @@ public interface RentalMapper {
 
     @Mapping(target = "carId", source = "car.id")
     @Mapping(target = "userId", source = "user.id")
-    RentalReturnResponseDto toReturnDto(Rental rental);
+    RentalResponseDto toDto(Rental rental);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "returnDate", ignore = true)

@@ -2,7 +2,7 @@ package com.jvavateam.carsharingapp.dto.rental;
 
 import java.time.LocalDate;
 
-public record RentalReturnResponseDto(
+public record RentalResponseDto(
         Long id,
         LocalDate rentalDate,
         LocalDate returnDate,
