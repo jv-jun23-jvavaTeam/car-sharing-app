@@ -3,6 +3,7 @@ package com.jvavateam.carsharingapp.controller;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.service.RentalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,7 +55,7 @@ public class RentalController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update rental return date",
             description = "Set actual return date (increase car inventory by 1)")
-    public RentalResponseDto updateReturnDate() {
+    public RentalReturnResponseDto updateReturnDate() {
         return rentalService.completeRental();
     }
 }

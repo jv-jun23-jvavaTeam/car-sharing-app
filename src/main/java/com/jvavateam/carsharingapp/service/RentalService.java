@@ -3,6 +3,7 @@ package com.jvavateam.carsharingapp.service;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import java.util.List;
 
 public interface RentalService {
@@ -12,5 +13,5 @@ public interface RentalService {
 
     CreateRentalResponseDto getById(Long id);
 
-    RentalResponseDto completeRental();
+    RentalReturnResponseDto completeRental();
 }

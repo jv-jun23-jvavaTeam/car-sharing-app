@@ -1,8 +1,8 @@
 package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
-import com.jvavateam.carsharingapp.dto.rental.CreateRentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
@@ -51,7 +51,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public RentalResponseDto completeRental() {
+    public RentalReturnResponseDto completeRental() {
         return null;
     }
 }
