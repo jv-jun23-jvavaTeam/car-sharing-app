@@ -34,8 +34,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private PaymentTotalCalculator calculator;
-    @Value("${stripe.secretKey}")
-    private String stripeKey;
+   /* @Value("${stripe.secretKey}")
+    private String stripeKey;*/
 
     @Override
     public List<PaymentResponseDto> getAllForCurrentUser() {
@@ -47,7 +47,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto)
             throws StripeException {
-        Stripe.apiKey = stripeKey;
+        Stripe.apiKey = "sk_test_51NwiEDEIBCpzUnxfXJ4R27LqvTzdcSEWcVw19qwAYqaR8ReA" +
+                "iW6LmVZkemAIIWJi3VJtu59lzow6OYDJVRoHSljg00d83TMgeW";
 
         Payment payment = paymentMapper.toEntity(requestDto);
         /*  payment.setRental(this.RENTAL);
