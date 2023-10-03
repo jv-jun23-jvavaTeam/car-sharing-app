@@ -10,4 +10,6 @@ public interface UserService {
     void updateUserRole(Long id, Role role);
 
     void updateUserInfo(UserRequestDto userRequestDto);
+
+    UserResponseDto register(UserRequestDto request);
 }
