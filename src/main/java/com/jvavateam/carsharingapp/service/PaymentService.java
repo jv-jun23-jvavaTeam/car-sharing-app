@@ -1,4 +1,4 @@
-package com.jvavateam.carsharingapp.service.payment;
+package com.jvavateam.carsharingapp.service;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 

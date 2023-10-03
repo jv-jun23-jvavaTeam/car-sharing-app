@@ -1,7 +1,8 @@
-package com.jvavateam.carsharingapp.service.payment;
+package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
+import com.jvavateam.carsharingapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
