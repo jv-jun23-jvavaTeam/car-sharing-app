@@ -1,4 +1,4 @@
-package com.jvavateam.carsharingapp.repository;
+package com.jvavateam.carsharingapp.repository.payment;
 
 import com.jvavateam.carsharingapp.model.Payment;
 import java.util.List;
@@ -11,4 +11,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     // @Query("FROM Payment p join fetch Rental r WHERE r.user.id = ?#{principal?.id}")
     List<Payment> findAll();
+
+    Payment findBySessionId(String sessionId);
 }

@@ -2,9 +2,9 @@ package com.jvavateam.carsharingapp.service.payment;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
-import com.jvavateam.carsharingapp.mapper.PaymentMapper;
+import com.jvavateam.carsharingapp.mapper.payment.PaymentMapper;
 import com.jvavateam.carsharingapp.model.Payment;
-import com.jvavateam.carsharingapp.repository.PaymentRepository;
+import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
 import com.jvavateam.carsharingapp.service.payment.calculator.PaymentCalculationsHandler;
 import com.jvavateam.carsharingapp.service.payment.calculator.PaymentTotalCalculator;
 import com.stripe.Stripe;
@@ -19,22 +19,28 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private static final String CURRENCY_NAME = "usd";
-    private static final String SUCCESS_URL = "http://localhost:8080/api/payments/success";
-    private static final String CANCEL_URL = "http://localhost:8080/api/payments/cancel";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
 
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private PaymentTotalCalculator calculator;
-    /* @Value("${stripe.secretKey}")
-    private String stripeKey;*/
+
+    @Value("${baseApiUrl}")
+    private String baseApiUrl;
+    @Value("${apiSuccessEndpoint}")
+    private String apiSuccessEndpoint;
+    @Value("${apiCancelEndpoint}")
+    private String apiCancelEndpoint;
+    @Value("${stripe.secretKey}")
+    private String stripeKey;
 
     @Override
     public List<PaymentResponseDto> getAllForCurrentUser() {
@@ -46,51 +52,18 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto)
             throws StripeException {
-        Stripe.apiKey = "sk_test_51NwiEDEIBCpzUnxfXJ4R27LqvTzdcSEWcVw19qwAYqaR8ReA"
-                + "iW6LmVZkemAIIWJi3VJtu59lzow6OYDJVRoHSljg00d83TMgeW";
+        Stripe.apiKey = stripeKey;
 
         Payment payment = paymentMapper.toEntity(requestDto);
-        /*  payment.setRental(this.RENTAL);
 
-        String carName = RENTAL.getCar().getBrand() + " " + RENTAL.getCar().getModel();*/
-
-        Session session = createSession(payment, "newCar");
+        Session session = createSession(payment);
 
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
-        payment.setAmountToPay(BigDecimal.valueOf(calculator.calculateTotal(payment)));
+        payment.setAmountToPay(BigDecimal.valueOf(500L));
         //paymentRepository.save(payment);
         PaymentResponseDto responseDto = paymentMapper.toDto(payment);
         return responseDto;
-    }
-
-    private Session createSession(Payment payment, String carName)
-            throws StripeException {
-        ProductCreateParams productParams = new ProductCreateParams.Builder()
-                .setName(carName)
-                .build();
-        Product product = Product.create(productParams);
-
-        PriceCreateParams priceParams = PriceCreateParams.builder()
-                .setCurrency(CURRENCY_NAME)
-                .setProduct(product.getId())
-                .setUnitAmount(countTotal(payment))
-                .build();
-        Price price = Price.create(priceParams);
-
-        SessionCreateParams sessionCreateParams = SessionCreateParams.builder()
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .addLineItem(SessionCreateParams.LineItem.builder()
-                        .setPrice(price.getId())
-                        .setQuantity(MAX_NUMBER_OF_CARS_TO_RENT)
-                        .build())
-                .setExpiresAt(EXPIRATION_TIME)
-                .setSuccessUrl(SUCCESS_URL)
-                .setCancelUrl(CANCEL_URL)
-                .build();
-
-        Session session = Session.create(sessionCreateParams);
-        return session;
     }
 
     @Override
@@ -107,6 +80,60 @@ public class PaymentServiceImpl implements PaymentService {
                 .stream()
                 .map(paymentMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public void updatePaymentStatus(String sessionId) {
+        Payment payment = paymentRepository.findBySessionId(sessionId);
+        payment.setStatus(Payment.Status.PAID);
+        paymentRepository.save(payment);
+    }
+
+    private Session createSession(Payment payment)
+            throws StripeException {
+        Product product = getProduct(getCarName(payment));
+        Price price = getPrice(product);
+        return getSession(price);
+    }
+
+    private Session getSession(Price price) throws StripeException {
+        SessionCreateParams sessionCreateParams = SessionCreateParams.builder()
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .addLineItem(SessionCreateParams.LineItem.builder()
+                        .setPrice(price.getId())
+                        .setQuantity(MAX_NUMBER_OF_CARS_TO_RENT)
+                        .build())
+                .setExpiresAt(EXPIRATION_TIME)
+                .setSuccessUrl(baseApiUrl
+                        + apiSuccessEndpoint
+                        + "?sessionId={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(baseApiUrl + apiCancelEndpoint)
+                .build();
+        Session session = Session.create(sessionCreateParams);
+        return session;
+    }
+
+    private static Price getPrice(Product product) throws StripeException {
+        PriceCreateParams priceParams = PriceCreateParams.builder()
+                .setCurrency(CURRENCY_NAME)
+                .setProduct(product.getId())
+                .setUnitAmount(500L)
+                .build();
+        Price price = Price.create(priceParams);
+        return price;
+    }
+
+    private Product getProduct(String carName) throws StripeException {
+        ProductCreateParams productParams = new ProductCreateParams.Builder()
+                .setName(carName)
+                .build();
+        
+        return Product.create(productParams);
+    }
+
+    private String getCarName(Payment payment) {
+        return payment.getRental().getCar().getBrand()
+                + " " + payment.getRental().getCar().getModel();
     }
 
     private Long countTotal(Payment payment) {

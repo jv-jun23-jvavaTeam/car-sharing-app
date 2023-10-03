@@ -13,4 +13,6 @@ public interface PaymentService {
     List<PaymentResponseDto> getAllSuccessfulPayments();
 
     List<PaymentResponseDto> getAllPausedPayments();
+
+    void updatePaymentStatus(String sessionId);
 }

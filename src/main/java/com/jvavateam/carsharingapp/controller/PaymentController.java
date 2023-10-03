@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,13 +40,16 @@ public class PaymentController {
         return paymentService.getAllPausedPayments();
     }
 
-    @GetMapping("/success")
-    public PaymentOperationMessage successful(CreatePaymentRequestDto requestDto) {
-        return new PaymentOperationMessage("Succesfull!");
+    @GetMapping("/successPayment")
+    public PaymentOperationMessage successful(@RequestParam String sessionId,
+                                              CreatePaymentRequestDto requestDto) {
+        paymentService.updatePaymentStatus(sessionId);
+        return new PaymentOperationMessage("Payment " + sessionId + " successfully provided!");
     }
 
     @GetMapping("/cancel")
     public PaymentOperationMessage error(CreatePaymentRequestDto requestDto) {
-        return new PaymentOperationMessage("Error!");
+        return new PaymentOperationMessage("Payment cancelled! You can try again later. "
+                + "The session will be open for 24hours.");
     }
 }
