@@ -23,6 +23,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    private static final String UNKNOWN_ERROR_MESSAGE =
+            "Server throws unknown exception ";
+    private static final String ENTITY_NOT_FOUND_MESSAGE =
+            "An error occurred while proceeding data from database. "
+                    + "Nothing found by provided parameters: ";
+    private static final String INVALID_REQUEST_DATA_MESSAGE =
+            "An error occurred while proceeding request data: ";
+    private static final String BAD_CREDENTIALS_MESSAGE =
+            "User not authenticated: Wrong data entered: ";
+    private static final String WRONG_JWT_MESSAGE =
+            "User not authenticated: Error during proceeding JWT: ";
+    private static final String ACCESS_DENIED_MESSAGE =
+            "User does not have access for this action: ";
+    private static final String WRONG_REGISTRATION_DATA_MESSAGE =
+            "Entered wrong data for registration: ";
+    private static final String DATA_INTEGRITY_VIOLATION_MESSAGE = "An error occurred while processing the request. "
+            + "You are attempting to add data "
+            + "that violates a unique constraint in the database: ";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -41,13 +59,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, headers, status);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<Object> handleAllErrors(Exception exception) {
+        logger.error("Internal server error: ", exception);
+        ErrorResponseDto response =
+                getErrorMessageBody(UNKNOWN_ERROR_MESSAGE,
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleUniqueDataDuplicate(
             DataIntegrityViolationException ex) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("An error occurred while processing the request. "
-                        + "You are attempting to add data "
-                        + "that violates a unique constraint in the database: " + ex.getMessage(),
+                getErrorMessageBody(DATA_INTEGRITY_VIOLATION_MESSAGE + ex.getMessage(),
                         HttpStatus.CONFLICT);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
@@ -57,7 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             RegistrationException ex
     ) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("Entered wrong data for registration: "
+                getErrorMessageBody(WRONG_REGISTRATION_DATA_MESSAGE
                                 + ex.getMessage(),
                         HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -68,7 +93,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             AccessDeniedException ex
     ) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("User does not have access for this action: "
+                getErrorMessageBody(ACCESS_DENIED_MESSAGE
                                 + ex.getMessage(),
                         HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
@@ -77,7 +102,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JwtException.class)
     protected ResponseEntity<ErrorResponseDto> handleJwtException(JwtException ex) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("User not authenticated: Error during proceeding JWT: "
+                getErrorMessageBody(WRONG_JWT_MESSAGE
                         + ex.getMessage(),
                         HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
@@ -87,7 +112,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponseDto> handleBadCredentialsException(
             BadCredentialsException ex) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("User not authenticated: Wrong data entered: "
+                getErrorMessageBody(BAD_CREDENTIALS_MESSAGE
                         + ex.getMessage(),
                         HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
@@ -98,7 +123,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             InvalidRequestParametersException ex
     ) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("An error occurred while proceeding request data: "
+                getErrorMessageBody(INVALID_REQUEST_DATA_MESSAGE
                         + ex.getMessage(),
                         HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -109,8 +134,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             EntityNotFoundException ex
     ) {
         ErrorResponseDto errorResponse =
-                getErrorMessageBody("An error occurred while proceeding data from database. "
-                        + "Nothing found by provided parameters: "
+                getErrorMessageBody(ENTITY_NOT_FOUND_MESSAGE
                         + ex.getMessage(),
                         HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
