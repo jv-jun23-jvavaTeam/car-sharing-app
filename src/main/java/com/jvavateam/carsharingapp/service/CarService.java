@@ -2,6 +2,7 @@ package com.jvavateam.carsharingapp.service;
 
 import com.jvavateam.carsharingapp.dto.car.CarDtoRequest;
 import com.jvavateam.carsharingapp.dto.car.CarDtoResponse;
+import com.jvavateam.carsharingapp.model.Car;
 import java.util.List;
 
 public interface CarService {
@@ -14,4 +15,6 @@ public interface CarService {
     List<CarDtoResponse> getAll();
 
     void deleteById(Long id);
+
+    void updateCarInventory(Car car);
 }
