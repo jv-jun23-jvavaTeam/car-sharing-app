@@ -35,7 +35,7 @@ public class CarController {
         return carService.create(carDto);
     }
 
-    @GetMapping
+    @GetMapping(value = "/{id}")
     @Operation(summary = "Get car by id",
             description = "Get certain car by id")
     public CarDtoResponse get(@PathVariable Long id) {
