@@ -38,7 +38,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             "User does not have access for this action: ";
     private static final String WRONG_REGISTRATION_DATA_MESSAGE =
             "Entered wrong data for registration: ";
-    private static final String DATA_INTEGRITY_VIOLATION_MESSAGE = "An error occurred while processing the request. "
+    private static final String DATA_INTEGRITY_VIOLATION_MESSAGE =
+            "An error occurred while processing the request. "
             + "You are attempting to add data "
             + "that violates a unique constraint in the database: ";
 
