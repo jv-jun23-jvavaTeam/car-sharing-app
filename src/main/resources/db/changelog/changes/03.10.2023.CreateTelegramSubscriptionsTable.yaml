@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-telegram-subscriptions-table
+      author: admin
+      changes:
+        - createTable:
+            tableName: telegram_subscriptions
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_users_shopping_cart
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
