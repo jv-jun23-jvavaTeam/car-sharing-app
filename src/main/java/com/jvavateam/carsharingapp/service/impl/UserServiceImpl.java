@@ -4,7 +4,7 @@ import com.jvavateam.carsharingapp.dto.user.UserRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserResponseDto;
 import com.jvavateam.carsharingapp.model.Role;
 import com.jvavateam.carsharingapp.model.User;
-import com.jvavateam.carsharingapp.repository.UserRepository;
+import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.UserService;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;

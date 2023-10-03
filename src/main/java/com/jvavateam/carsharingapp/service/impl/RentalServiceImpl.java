@@ -3,16 +3,21 @@ package com.jvavateam.carsharingapp.service.impl;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
+import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
-import com.jvavateam.carsharingapp.repository.UserRepository;
+import com.jvavateam.carsharingapp.repository.SpecificationBuilder;
+import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
+import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.repository.car.CarRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.service.RentalService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +28,7 @@ public class RentalServiceImpl implements RentalService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
+    private final RentalSpecificationBuilder rentalSpecificationBuilder;
 
     @Override
     @Transactional
@@ -44,9 +50,10 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public List<RentalResponseDto> getAll() {
-        List<Rental> rentals = rentalRepository.getAllForCurrentUser();
-        return rentals.stream()
+    public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
+                                          Pageable pageable) {
+        Specification<Rental> searchSpecification = rentalSpecificationBuilder.build(searchParameters);
+        return rentalRepository.findAll(searchSpecification, pageable).stream()
                 .map(rentalMapper::toDto)
                 .toList();
     }
