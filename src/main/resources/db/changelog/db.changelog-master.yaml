@@ -1,6 +1,6 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changes/02.10.CreateCarsTable.yaml
+      file: db/changelog/changes/02.10.2023.CreateCarsTable.yaml
   - include:
       file: db/changelog/changes/02.10.2023.CreateUsersTable.yaml
   - include:
@@ -12,6 +12,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/02.10.2023.CreateRentalsConnections.yaml
   - include:
-      file: db/changelog/changes/02.10.2023.create-payment-table.yaml
+      file: db/changelog/changes/02.10.2023.CreatePaymentTable.yaml
   - include:
       file: db/changelog/changes/03.10.2023.AddRolesToRolesTable.yaml
