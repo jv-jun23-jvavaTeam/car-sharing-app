@@ -1,11 +1,11 @@
-package com.jvavateam.carsharingapp.payment;
+package com.jvavateam.carsharingapp.service.payment;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
 import com.jvavateam.carsharingapp.mapper.PaymentMapper;
 import com.jvavateam.carsharingapp.model.Payment;
-import com.jvavateam.carsharingapp.payment.calculator.PaymentCalculationsHandler;
-import com.jvavateam.carsharingapp.payment.calculator.PaymentTotalCalculator;
+import com.jvavateam.carsharingapp.service.payment.calculator.PaymentCalculationsHandler;
+import com.jvavateam.carsharingapp.service.payment.calculator.PaymentTotalCalculator;
 import com.jvavateam.carsharingapp.repository.PaymentRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;

@@ -3,7 +3,7 @@ package com.jvavateam.carsharingapp.controller;
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentOperationMessage;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
-import com.jvavateam.carsharingapp.payment.PaymentService;
+import com.jvavateam.carsharingapp.service.payment.PaymentService;
 import com.stripe.exception.StripeException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

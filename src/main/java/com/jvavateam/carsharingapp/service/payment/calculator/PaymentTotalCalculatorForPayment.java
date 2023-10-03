@@ -1,4 +1,4 @@
-package com.jvavateam.carsharingapp.payment.calculator;
+package com.jvavateam.carsharingapp.service.payment.calculator;
 
 import com.jvavateam.carsharingapp.model.Payment;
 import java.math.BigDecimal;
