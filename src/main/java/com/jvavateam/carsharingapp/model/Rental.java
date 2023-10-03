@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -18,6 +20,7 @@ import org.hibernate.annotations.Where;
 
 @Data
 @Entity
+@AllArgsConstructor
 @SQLDelete(sql = "UPDATE rental SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted=false")
 @Table(name = "rentals")
@@ -25,7 +28,7 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "renatal_date", nullable = false)
+    @Column(name = "rental_date", nullable = false)
     private LocalDate rentalDate;
     @Column(name = "return_date", nullable = false)
     private LocalDate returnDate;
