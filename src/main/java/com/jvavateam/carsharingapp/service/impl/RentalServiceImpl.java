@@ -8,11 +8,10 @@ import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
-import com.jvavateam.carsharingapp.repository.SpecificationBuilder;
-import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
-import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.repository.car.CarRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
+import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
+import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.RentalService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +51,8 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
                                           Pageable pageable) {
-        Specification<Rental> searchSpecification = rentalSpecificationBuilder.build(searchParameters);
+        Specification<Rental> searchSpecification =
+                rentalSpecificationBuilder.build(searchParameters);
         return rentalRepository.findAll(searchSpecification, pageable).stream()
                 .map(rentalMapper::toDto)
                 .toList();

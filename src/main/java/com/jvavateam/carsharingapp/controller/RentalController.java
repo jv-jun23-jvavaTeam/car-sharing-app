@@ -41,7 +41,8 @@ public class RentalController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals",
             description = "Get rentals by user ID and whether the rental is still active or not")
-    public List<RentalResponseDto> getAll(@ModelAttribute RentalSearchParameters parameters, Pageable pageable) {
+    public List<RentalResponseDto> getAll(@ModelAttribute RentalSearchParameters parameters,
+                                          Pageable pageable) {
         return rentalService.getAll(parameters, pageable);
     }
 
