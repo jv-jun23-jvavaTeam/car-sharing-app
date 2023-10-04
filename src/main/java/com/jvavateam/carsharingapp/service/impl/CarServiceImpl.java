@@ -24,9 +24,8 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarDtoResponse getById(Long id) {
-        return carMapper.toDto(carRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find car by id: " + id)
-        ));
+        return carMapper.toDto(findCarById(id)
+        );
     }
 
     @Override
@@ -55,5 +54,23 @@ public class CarServiceImpl implements CarService {
         );
         updatedCar.setInventory(car.getInventory());
         carRepository.save(updatedCar);
+    }
+
+    @Override
+    public Car updateCar(Car car) {
+        Car updatedCar = new Car();
+        updatedCar.setBrand(car.getBrand());
+        updatedCar.setModel(car.getModel());
+        updatedCar.setType(car.getType());
+        updatedCar.setInventory(car.getInventory());
+        updatedCar.setDailyFee(car.getDailyFee());
+        return updatedCar;
+    }
+
+    @Override
+    public Car findCarById(Long id) {
+        return carRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't find car by id: " + id)
+        );
     }
 }

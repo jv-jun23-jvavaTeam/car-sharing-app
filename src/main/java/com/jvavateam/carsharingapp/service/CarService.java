@@ -17,4 +17,8 @@ public interface CarService {
     void deleteById(Long id);
 
     void updateCarInventory(Car car);
+
+    Car findCarById(Long id);
+
+    Car updateCar(Car car);
 }
