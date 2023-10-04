@@ -12,6 +12,8 @@ public interface CarService {
 
     CarDtoResponse update(CarDtoRequest carDto, Long id);
 
+    Car update(Car car);
+
     List<CarDtoResponse> getAll();
 
     void deleteById(Long id);
@@ -19,6 +21,4 @@ public interface CarService {
     void updateCarInventory(Car car);
 
     Car findCarById(Long id);
-
-    Car update(Car car);
 }
