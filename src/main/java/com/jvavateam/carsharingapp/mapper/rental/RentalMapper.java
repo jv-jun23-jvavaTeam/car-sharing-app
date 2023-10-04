@@ -39,6 +39,7 @@ public interface RentalMapper {
         car.setId(createRentalDto.carId());
         User user = new User();
         user.setId(createRentalDto.userId());
+        rental.setActive(true);
         rental.setCar(car);
         rental.setUser(user);
     }
