@@ -46,10 +46,7 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
                                           Pageable pageable) {
-        User currentUser = userRepository.getCurrentUser();
-        if (!isManager(currentUser)) {
-            checkUserAccess(searchParameters.userId());
-        }
+        checkUserAccess(searchParameters.userId());
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
 
@@ -101,9 +98,14 @@ public class RentalServiceImpl implements RentalService {
     }
 
     private void checkUserAccess(Long requestUserId) {
-        Long currentUserId = userRepository.getCurrentUser().getId();
-        if (requestUserId == null || !requestUserId.equals(currentUserId)) {
-            throw new InvalidRequestParametersException("Wrong user id entered: " + requestUserId);
+        User currentUser = userRepository.getCurrentUser();
+        if (requestUserId == null) {
+            throw new InvalidRequestParametersException("Empty user id entered: " + requestUserId);
+        }
+        if (!isManager(currentUser)) {
+            if (!requestUserId.equals(currentUser.getId())) {
+                throw new InvalidRequestParametersException("Wrong user id entered: " + requestUserId);
+            }
         }
     }
 
