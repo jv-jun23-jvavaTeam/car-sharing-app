@@ -43,7 +43,7 @@ public class RentalController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
     public RentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
@@ -63,7 +63,7 @@ public class RentalController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
     @Operation(summary = "Get all user rentals",
             description = "Get rentals for current user")
     public List<RentalResponseDto> getAll(Pageable pageable) {
@@ -71,7 +71,7 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get user rental by id",
             description = "Get specific rental")
@@ -80,7 +80,7 @@ public class RentalController {
     }
 
     @PostMapping("/rentals/{id}/return")
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update rental return date",
             description = "Set actual return date (increase car inventory by 1)")
