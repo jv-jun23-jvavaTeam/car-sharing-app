@@ -2,6 +2,7 @@ package com.jvavateam.carsharingapp.service.impl;
 
 import com.jvavateam.carsharingapp.dto.car.CarDtoRequest;
 import com.jvavateam.carsharingapp.dto.car.CarDtoResponse;
+import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.mapper.car.CarMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.repository.car.CarRepository;
@@ -24,13 +25,15 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarDtoResponse getById(Long id) {
         return carMapper.toDto(carRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Can't find car by id: " + id)
+                () -> new EntityNotFoundException("Can't find car by id: " + id)
         ));
     }
 
     @Override
     public CarDtoResponse update(CarDtoRequest carDto, Long id) {
-        return carMapper.toDto(carRepository.save(carMapper.toEntity(carDto)));
+        Car car = carMapper.toEntity(carDto);
+        car.setId(id);
+        return carMapper.toDto(carRepository.save(car));
     }
 
     @Override
@@ -48,7 +51,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public void updateCarInventory(Car car) {
         Car updatedCar = carRepository.findById(car.getId()).orElseThrow(
-                () -> new RuntimeException("Can't find car by id: " + car.getId())
+                () -> new EntityNotFoundException("Can't find car by id: " + car.getId())
         );
         updatedCar.setInventory(car.getInventory());
         carRepository.save(updatedCar);
