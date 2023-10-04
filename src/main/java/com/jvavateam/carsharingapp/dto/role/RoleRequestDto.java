@@ -1,10 +1,11 @@
 package com.jvavateam.carsharingapp.dto.role;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
-@Data
-public class RoleRequestDto {
-    @NotBlank
-    private String status;
+public record RoleRequestDto(
+        @NotNull(message = "Status cannot be null")
+        @Schema(description = "Role status", example = "CUSTOMER")
+        String status) {
 }
+
