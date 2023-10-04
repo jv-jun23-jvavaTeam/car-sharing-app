@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.controller;
 
+import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
@@ -12,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,15 @@ public class RentalController {
     private final RentalService rentalService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Place new rental",
+            description = "Add a new rental (decrease car inventory by 1)")
+    public RentalResponseDto createByManager(@Valid @RequestBody CreateRentalByManagerDto createRentalByManagerDto) {
+        return rentalService.createByManager(createRentalByManagerDto);
+    }
+
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
@@ -37,13 +48,22 @@ public class RentalController {
         return rentalService.create(createRentalDto);
     }
 
+    @GetMapping("/manager")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get all user rentals by manager",
+            description = "Get rentals by user ID and whether the rental is still active or not")
+    public List<RentalResponseDto> getAllByManager(@ModelAttribute RentalSearchParameters parameters,
+                                          Pageable pageable) {
+        return rentalService.getAllByManager(parameters, pageable);
+    }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals",
-            description = "Get rentals by user ID and whether the rental is still active or not")
-    public List<RentalResponseDto> getAll(@ModelAttribute RentalSearchParameters parameters,
-                                          Pageable pageable) {
-        return rentalService.getAll(parameters, pageable);
+            description = "Get rentals for current user")
+    public List<RentalResponseDto> getAll(Pageable pageable) {
+        return rentalService.getAll(pageable);
     }
 
     @GetMapping("/{id}")

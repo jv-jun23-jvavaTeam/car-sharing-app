@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.service.impl;
 
+import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
@@ -9,12 +10,9 @@ import com.jvavateam.carsharingapp.exception.InvalidRequestParametersException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
-import com.jvavateam.carsharingapp.model.Role;
-import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.car.CarRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
-import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.RentalService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +25,23 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
     private final CarRepository carRepository;
-    private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
 
     @Override
     @Transactional
+    public RentalResponseDto createByManager(CreateRentalByManagerDto createRentalByManagerDto) {
+        checkData(createRentalByManagerDto.userId());
+        decreaseCarInventory(createRentalByManagerDto.carId());
+        Rental rental = rentalMapper.toModel(createRentalByManagerDto);
+        Rental savedRental = rentalRepository.save(rental);
+        return rentalMapper.toDto(savedRental);
+    }
+
+    @Override
+    @Transactional
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
-        checkUserAccess(createRentalDto.userId());
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
         Rental savedRental = rentalRepository.save(rental);
@@ -44,13 +50,21 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
-    public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
-                                          Pageable pageable) {
-        checkUserAccess(searchParameters.userId());
+    public List<RentalResponseDto> getAllByManager(RentalSearchParameters searchParameters,
+                                                   Pageable pageable) {
+        checkData(searchParameters.userId());
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
 
         return rentalRepository.findAll(searchSpecification, pageable).stream()
+                .map(rentalMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<RentalResponseDto> getAll(Pageable pageable) {
+        return rentalRepository.findAll(pageable).stream()
                 .map(rentalMapper::toDto)
                 .toList();
     }
@@ -92,22 +106,9 @@ public class RentalServiceImpl implements RentalService {
         carRepository.save(actualCar);
     }
 
-    private boolean isManager(User user) {
-        return user.getRoles()
-                .stream()
-                .anyMatch(role -> role.getName().equals(Role.RoleName.MANAGER));
-    }
-
-    private void checkUserAccess(Long requestUserId) {
-        User currentUser = userRepository.getCurrentUser();
+    private void checkData(Long requestUserId) {
         if (requestUserId == null) {
             throw new InvalidRequestParametersException("Empty user id entered: " + requestUserId);
-        }
-        if (!isManager(currentUser)) {
-            if (!requestUserId.equals(currentUser.getId())) {
-                throw new InvalidRequestParametersException("Wrong user id entered: "
-                        + requestUserId);
-            }
         }
     }
 
