@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -23,8 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
     private static final String AUTHENTICATION_ENDPOINT = "/auth/**";
-    private static final String SWAGGER_UI_ENDPOINT = "/swagger-ui/index.html#";
-    private static final String SWAGGER_API_ENDPOINT = "v3/api-docs";
+    private static final String SWAGGER_UI_ENDPOINT = "/swagger-ui/**";
+    private static final String SWAGGER_API_ENDPOINT = "/v3/api-docs/**";
+    private static final String HEALTH_CHECK_ENDPOINT = "/health/**";
 
     private final UserDetailsService userDetailsService;
     private final JwtAuthentificationFilter jwtAuthentificationFilter;
@@ -42,7 +44,8 @@ public class SecurityConfig {
                         auth -> auth
                                 .requestMatchers(AUTHENTICATION_ENDPOINT,
                                         SWAGGER_UI_ENDPOINT,
-                                        SWAGGER_API_ENDPOINT)
+                                        SWAGGER_API_ENDPOINT,
+                                        HEALTH_CHECK_ENDPOINT)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
@@ -61,5 +64,10 @@ public class SecurityConfig {
             AuthenticationConfiguration authenticationConfiguration
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
     }
 }

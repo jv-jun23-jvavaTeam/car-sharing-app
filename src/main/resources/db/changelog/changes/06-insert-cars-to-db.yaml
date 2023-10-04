@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: InsertCars
+      author: s_kostashchuk
+      changes:
+        - insert:
+            tableName: cars
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: model
+                  value: 'Toyota Camry'
+              - column:
+                  name: brand
+                  value: 'Toyota'
+              - column:
+                  name: inventory
+                  value: 15
+              - column:
+                  name: daily_fee
+                  value: 80.00
+              - column:
+                  name: type
+                  value: 'Sedan'
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
+        - insert:
+            tableName: cars
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: model
+                  value: 'Honda CR-V'
+              - column:
+                  name: brand
+                  value: 'Honda'
+              - column:
+                  name: inventory
+                  value: 10
+              - column:
+                  name: daily_fee
+                  value: 95.50
+              - column:
+                  name: type
+                  value: 'SUV'
+              - column:
+                  name: is_deleted
+                  valueBoolean: false

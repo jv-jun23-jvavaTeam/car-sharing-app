@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-user
+      author: sonia_kostashchuk
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: admin@gmail.com
+              - column:
+                  name: first_name
+                  value: Bob
+              - column:
+                  name: last_name
+                  value: Green
+              - column:
+                  name: password
+                  value: $2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW
+  - changeSet:
+      id: insert-roles
+      author: sonia_kostashchuk
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ADMIN
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: MANAGER
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: CUSTOMER
+  - changeSet:
+      id: insert-user-role
+      author: holsoni
+      changes:
+        - insert:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: role_id
+                  valueNumeric: 1
