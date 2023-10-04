@@ -132,6 +132,27 @@ class RentalServiceTest {
     private static final Pageable DEFAULT_PAGEABLE = Pageable.ofSize(20);
     private static final Page<Rental> REPOSITORY_PAGE =
             new PageImpl<>(REPOSITORY_RENTALS, DEFAULT_PAGEABLE, REPOSITORY_RENTALS.size());
+    private final Specification<Rental> SEARCH_SPECIFICATION = (root, query, criteriaBuilder) -> {
+        Long userId = SEARCH_PARAMS.userId();
+        boolean isActive = SEARCH_PARAMS.isActive();
+        List<Predicate> predicates = new ArrayList<>();
+        if (userId != null) {
+            predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
+        }
+        if (isActive) {
+            predicates.add(criteriaBuilder.isTrue(root.get("active")));
+        }
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    };
+
+    private static final Rental SAVED_RETURN_SECOND_RENTAL = new Rental()
+            .setId(SECOND_RENTAL_ID)
+            .setRentalDate(RENTAL_DATE)
+            .setReturnDate(RETURN_DATE)
+            .setActualReturnDate(LocalDate.now())
+            .setCar(FOREIGN_KEY_CAR)
+            .setUser(FOREIGN_KEY_USER)
+            .setActive(false);
     @Mock
     private RentalSpecificationBuilder rentalSpecificationBuilder;
     @Mock
@@ -168,19 +189,6 @@ class RentalServiceTest {
         assertEquals(RESPONSE_CREATED_RENTAL_DTO, actual);
     }
 
-    private final Specification<Rental> SEARCH_SPECIFICATION = (root, query, criteriaBuilder) -> {
-        Long userId = SEARCH_PARAMS.userId();
-        boolean isActive = SEARCH_PARAMS.isActive();
-        List<Predicate> predicates = new ArrayList<>();
-        if (userId != null) {
-            predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
-        }
-        if (isActive) {
-            predicates.add(criteriaBuilder.isTrue(root.get("active")));
-        }
-        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    };
-
     @Test
     @DisplayName("Verify get all rentals for specific user by Manager")
     void getAllByManager_validSearchSpecification_shouldReturnRentalDtos() {
@@ -214,15 +222,6 @@ class RentalServiceTest {
         RentalResponseDto actual = rentalService.getById(SECOND_RENTAL_ID);
         assertEquals(SECOND_RENTAL_DTO, actual);
     }
-
-    private static final Rental SAVED_RETURN_SECOND_RENTAL = new Rental()
-            .setId(SECOND_RENTAL_ID)
-            .setRentalDate(RENTAL_DATE)
-            .setReturnDate(RETURN_DATE)
-            .setActualReturnDate(LocalDate.now())
-            .setCar(FOREIGN_KEY_CAR)
-            .setUser(FOREIGN_KEY_USER)
-            .setActive(false);
 
     @Test
     @DisplayName("Verify complete rental with Valid Id")
