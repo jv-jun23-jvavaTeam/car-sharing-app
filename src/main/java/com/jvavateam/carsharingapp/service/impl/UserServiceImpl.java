@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto getCurrentUserInfo() {
-        return userMapper.toDto(userRepository.getCurrentUser());
+        return userMapper.toDto(getAuthentificatedUser());
     }
 
     @Override
