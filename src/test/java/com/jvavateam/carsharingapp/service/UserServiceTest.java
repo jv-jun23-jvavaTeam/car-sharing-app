@@ -1,5 +1,7 @@
 package com.jvavateam.carsharingapp.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.jvavateam.carsharingapp.dto.role.RoleRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserRequestDto;
 import com.jvavateam.carsharingapp.dto.user.UserResponseDto;
@@ -11,7 +13,8 @@ import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.impl.UserServiceImpl;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,9 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import java.util.Optional;
-import java.util.Set;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -32,25 +32,25 @@ public class UserServiceTest {
     private static final RoleRequestDto ROLE_REQUEST_DTO = new RoleRequestDto("MANAGER");
     private static final Long VALID_ID = 1L;
     private static final Long INVALID_ID = 1000L;
-    private static final String ENCODED_PASSWORD = "First1234";
+    private static final String ENCODED_PASSWORD = "Password1234";
     private static final UserRequestDto USER_REQUEST_DTO =
-            new UserRequestDto("fisrtUser@mail.com",
-                    "First1234",
-                    "First1234",
-                    "First",
-                    "First");
-    private static final User USER_FROM_DB = new User()
+            new UserRequestDto("userBob@mail.com",
+                    "Password1234",
+                    "Password1234",
+                    "Bob",
+                    "Johnson");
+    private static final User USER = new User()
             .setId(1L)
-            .setEmail("fisrtUser@mail.com")
-            .setPassword("First1234")
-            .setFirstName("First")
-            .setLastName("First")
+            .setEmail("userBob@mail.com")
+            .setPassword("Password1234")
+            .setFirstName("Bob")
+            .setLastName("Johnson")
             .setDeleted(false)
             .setRoles(Set.of(CUSTOMER));
     private static final UserResponseDto USER_RESPONSE_DTO =
-            new UserResponseDto("fisrtUser@mail.com",
-                    "First",
-                    "First" );
+            new UserResponseDto("userBob@mail.com",
+                    "Bob",
+                    "Johnson");
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -62,31 +62,67 @@ public class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-//    @Test
-//    @DisplayName("Verify getAuthentificationMethod() method works")
-//    public void getAuthentificationMethod_ReturnsAuthenticatedUser() {
-//        Mockito.when(userRepository.getCurrentUser()).thenReturn(USER_FROM_DB);
-//
-//    }
+    @Test
+    @DisplayName("Verify getCurrentUserInfo() method works")
+    public void getCurrentUserInfo_ReturnsUserResponseDto() {
+        Mockito.when(userRepository.getCurrentUser()).thenReturn(USER);
+        Mockito.when(userMapper.toDto(USER)).thenReturn(USER_RESPONSE_DTO);
 
-//    @Test
-//    @DisplayName("Verify updateUserInfo() method works")
-//    public void updateUserInfo_ValidRequestDto_ReturnsValidResponseDto() {
-//        Mockito.when(userMapper.toModel(USER_REQUEST_DTO)).thenReturn(USER_FROM_DB);
-//
-//        UserResponseDto updateUserDto = userService.updateUserInfo(USER_REQUEST_DTO);
-//
-//        EqualsBuilder.reflectionEquals(updateUserDto, USER_RESPONSE_DTO);
-//    }
+        UserResponseDto authentificationUserInfo = userService.getCurrentUserInfo();
+
+        Assertions.assertEquals(authentificationUserInfo, USER_RESPONSE_DTO);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .getCurrentUser();
+        Mockito.verify(userMapper, Mockito.times(1))
+                .toDto(USER);
+    }
+
+    @Test
+    @DisplayName("Verify getAuthentificationMethod() method works")
+    public void getAuthentificationMethod_ReturnsAuthenticatedUser() {
+        Mockito.when(userRepository.getCurrentUser()).thenReturn(USER);
+
+        User authentificatedUser = userService.getAuthentificatedUser();
+
+        Mockito.verify(userRepository, Mockito.times(1))
+                        .getCurrentUser();
+        Assertions.assertEquals(authentificatedUser, USER);
+    }
+
+    @Test
+    @DisplayName("Verify updateUserInfo() method works")
+    public void updateUserInfo_ValidRequestDto_ReturnsValidResponseDto() {
+        Mockito.when(userMapper.toModel(USER_REQUEST_DTO)).thenReturn(USER);
+        Mockito.when(userRepository.getCurrentUser()).thenReturn(USER);
+        Mockito.when(userRepository.save(USER)).thenReturn(USER);
+        Mockito.when(userMapper.toDto(USER)).thenReturn(USER_RESPONSE_DTO);
+
+        UserResponseDto updateUserDto = userService.updateUserInfo(USER_REQUEST_DTO);
+
+        Assertions.assertEquals(updateUserDto, USER_RESPONSE_DTO);
+        Mockito.verify(userMapper, Mockito.times(1))
+                .toModel(USER_REQUEST_DTO);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .getCurrentUser();
+        Mockito.verify(userRepository, Mockito.times(1))
+                .save(USER);
+        Mockito.verify(userMapper, Mockito.times(1))
+                .toDto(USER);
+    }
 
     @Test
     @DisplayName("Verify updateUserRole() method works")
     public void updateUserRole_ValidUserIdAndRole_ReturnsResponseStatusOk() {
-        Mockito.when(userRepository.findById(VALID_ID)).thenReturn(Optional.of(USER_FROM_DB));
+        Mockito.when(userRepository.findById(VALID_ID)).thenReturn(Optional.of(USER));
         Mockito.when(roleRepository.getRoleByName(Role.RoleName.valueOf(ROLE_REQUEST_DTO.status())))
                 .thenReturn(MANAGER);
 
         userService.updateUserRole(VALID_ID, ROLE_REQUEST_DTO);
+
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(VALID_ID);
+        Mockito.verify(roleRepository, Mockito.times(1))
+                .getRoleByName(Role.RoleName.valueOf(ROLE_REQUEST_DTO.status()));
     }
 
     @Test
@@ -101,27 +137,40 @@ public class UserServiceTest {
         String actual = exception.getMessage();
 
         Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(INVALID_ID);
     }
 
     @Test
     @DisplayName("Verify register() method works")
-    public void register_ValidUserRequestDto_ReturnsValidUserResponseDto() throws RegistrationException {
-        Mockito.when(userMapper.toModel(USER_REQUEST_DTO)).thenReturn(USER_FROM_DB);
-        Mockito.when(passwordEncoder.encode(USER_FROM_DB.getPassword())).thenReturn(ENCODED_PASSWORD);
+    public void register_ValidUserRequestDto_ReturnsValidUserResponseDto()
+            throws RegistrationException {
+        Mockito.when(userMapper.toModel(USER_REQUEST_DTO)).thenReturn(USER);
+        Mockito.when(passwordEncoder.encode(USER.getPassword())).thenReturn(ENCODED_PASSWORD);
         Mockito.when(roleRepository.getRoleByName(CUSTOMER.getName())).thenReturn(CUSTOMER);
-        Mockito.when(userRepository.save(USER_FROM_DB)).thenReturn(USER_FROM_DB);
-        Mockito.when(userMapper.toDto(USER_FROM_DB)).thenReturn(USER_RESPONSE_DTO);
+        Mockito.when(userRepository.save(USER)).thenReturn(USER);
+        Mockito.when(userMapper.toDto(USER)).thenReturn(USER_RESPONSE_DTO);
 
-        UserResponseDto registerUser = userService.register(USER_REQUEST_DTO);
+        UserResponseDto registeredUser = userService.register(USER_REQUEST_DTO);
 
-        Assertions.assertEquals(registerUser, USER_RESPONSE_DTO);
+        Assertions.assertEquals(registeredUser, USER_RESPONSE_DTO);
+        Mockito.verify(userMapper, Mockito.times(1))
+                .toModel(USER_REQUEST_DTO);
+        Mockito.verify(passwordEncoder, Mockito.times(1))
+                .encode(USER.getPassword());
+        Mockito.verify(roleRepository, Mockito.times(1))
+                .getRoleByName(CUSTOMER.getName());
+        Mockito.verify(userRepository, Mockito.times(1))
+                .save(USER);
+        Mockito.verify(userMapper, Mockito.times(1))
+                .toDto(USER);
     }
 
     @Test
     @DisplayName("Verify register() method doesn't work for existing user")
     public void register_InValidUserRequestDto_ThrowsRegistrationException() {
         Mockito.when(userRepository.findByEmail(USER_REQUEST_DTO.email()))
-                .thenReturn(Optional.of(USER_FROM_DB));
+                .thenReturn(Optional.of(USER));
 
         Exception exception = assertThrows(RegistrationException.class,
                 () -> userService.register(USER_REQUEST_DTO));
@@ -130,5 +179,7 @@ public class UserServiceTest {
         String actual = exception.getMessage();
 
         Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findByEmail(USER_REQUEST_DTO.email());
     }
 }
