@@ -1,4 +1,14 @@
 package com.jvavateam.carsharingapp.dto.payment;
 
-public record PaymentResponseDto(String Status, String amountPaid) {
+import java.math.BigDecimal;
+
+public record PaymentResponseDto(
+        Long id,
+        String Status,
+        String type,
+        String sessionUrl,
+        String sessionId,
+        Long rentalId,
+        BigDecimal amountPaid
+) {
 }
