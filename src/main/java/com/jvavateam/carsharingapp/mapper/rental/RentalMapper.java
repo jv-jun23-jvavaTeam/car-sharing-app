@@ -44,7 +44,8 @@ public interface RentalMapper {
     Rental toModel(CreateRentalDto rentalDto);
 
     @AfterMapping
-    default void setUpModel(@MappingTarget Rental rental, CreateRentalByManagerDto createRentalByManagerDto) {
+    default void setUpModel(@MappingTarget Rental rental,
+                            CreateRentalByManagerDto createRentalByManagerDto) {
         Car car = new Car();
         car.setId(createRentalByManagerDto.carId());
         User user = new User();

@@ -31,12 +31,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class RentalController {
     private final RentalService rentalService;
 
-    @PostMapping
+    @PostMapping("/manager")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
-    public RentalResponseDto createByManager(@Valid @RequestBody CreateRentalByManagerDto createRentalByManagerDto) {
+    public RentalResponseDto createByManager(
+            @Valid @RequestBody CreateRentalByManagerDto createRentalByManagerDto) {
         return rentalService.createByManager(createRentalByManagerDto);
     }
 
@@ -53,8 +54,9 @@ public class RentalController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals by manager",
             description = "Get rentals by user ID and whether the rental is still active or not")
-    public List<RentalResponseDto> getAllByManager(@ModelAttribute RentalSearchParameters parameters,
-                                          Pageable pageable) {
+    public List<RentalResponseDto> getAllByManager(
+            @ModelAttribute RentalSearchParameters parameters,
+            Pageable pageable) {
         return rentalService.getAllByManager(parameters, pageable);
     }
 
