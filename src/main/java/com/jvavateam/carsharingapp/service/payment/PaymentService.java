@@ -8,6 +8,8 @@ import java.util.List;
 public interface PaymentService {
     List<PaymentResponseDto> getAllForCurrentUser();
 
+    List<PaymentResponseDto> getAllForUser(Long id);
+
     PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto) throws StripeException;
 
     List<PaymentResponseDto> getAllSuccessfulPayments();

@@ -5,7 +5,9 @@ import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
 import com.jvavateam.carsharingapp.exception.PaymentException;
 import com.jvavateam.carsharingapp.mapper.payment.PaymentMapper;
 import com.jvavateam.carsharingapp.model.Payment;
+import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
+import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.service.payment.calculator.PaymentCalculationsHandler;
 import com.jvavateam.carsharingapp.service.payment.calculator.PaymentTotalCalculator;
 import com.stripe.Stripe;
@@ -22,6 +24,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
 
     private final PaymentRepository paymentRepository;
+    private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
     private PaymentTotalCalculator calculator;
 
@@ -51,17 +55,31 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto)
-            throws StripeException {
+    public List<PaymentResponseDto> getAllForUser(Long id) {
+        return paymentRepository.findAllByRentalUserId(id).stream()
+                .map(paymentMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto) {
         Stripe.apiKey = stripeKey;
+        existsPendingPayment();
 
         Payment payment = paymentMapper.toEntity(requestDto);
+        Rental rental = rentalRepository.getReferenceById(requestDto.rentalId());
+        existsPaymentForRental(rental);
 
+        checkRentalDates(rental);
+
+        payment.setRental(rental);
         Session session = createSession(payment);
 
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
-        payment.setAmountToPay(BigDecimal.valueOf(500L));
+        payment.setStatus(Payment.Status.PENDING);
+        payment.setAmountToPay(BigDecimal.valueOf(countTotal(payment)));
         paymentRepository.save(payment);
         PaymentResponseDto responseDto = paymentMapper.toDto(payment);
         return responseDto;
@@ -90,10 +108,9 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.save(payment);
     }
 
-    private Session createSession(Payment payment)
-            throws StripeException {
-        Product product = getProduct(getCarName(payment));
-        Price price = getPrice(product);
+    private Session createSession(Payment payment) {
+        Product product = getProduct(payment);
+        Price price = getPrice(product, payment);
         return getSession(price);
     }
 
@@ -114,42 +131,69 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             session = Session.create(sessionCreateParams);
         } catch (StripeException e) {
-            throw new PaymentException("Session " + session.getId() + " creation went wrong", e);
+            throw new PaymentException("Session " + session.getId() + " creation went wrong!");
         }
         return session;
     }
 
-    private static Price getPrice(Product product) {
+    private Price getPrice(Product product, Payment payment) {
         PriceCreateParams priceParams = PriceCreateParams.builder()
                 .setCurrency(CURRENCY_NAME)
                 .setProduct(product.getId())
-                .setUnitAmount(500L)
+                .setUnitAmount(countTotal(payment))
                 .build();
         Price price = null;
         try {
             price = Price.create(priceParams);
         } catch (StripeException e) {
-            throw new PaymentException("Price " + price.getId() + " creation went wrong", e);
+            throw new PaymentException("Price " + price.getId() + " creation went wrong!");
         }
         return price;
     }
 
-    private Product getProduct(String carName) {
+    private Product getProduct(Payment payment) {
         ProductCreateParams productParams = new ProductCreateParams.Builder()
-                .setName(carName)
+                .setName(getCarName(payment))
+                .setDefaultPriceData(ProductCreateParams.DefaultPriceData.builder()
+                        .setUnitAmount(countTotal(payment))
+                        .setCurrency(CURRENCY_NAME)
+                        .build())
                 .build();
         Product product = new Product();
         try {
             product = Product.create(productParams);
         } catch (StripeException e) {
-            throw new PaymentException("Product " + product.getId() + " creation went wrong", e);
+            throw new PaymentException("Product " + product.getId() + " creation went wrong!");
         }
         return product;
     }
 
+    private void checkRentalDates(Rental rental) {
+        if (rental.getReturnDate() == null) {
+            throw new PaymentException("You can't carry out payment if return date is null!");
+        }
+    }
+
+    private void existsPendingPayment() {
+        boolean check = paymentRepository.findAll().stream()
+                .anyMatch(payment -> payment.getStatus().equals(Payment.Status.PENDING));
+        if (check) {
+            throw new PaymentException(
+                    "You have  unpaid payments! New payment can not be created!");
+        }
+    }
+
+    private void existsPaymentForRental(Rental rental) {
+        boolean check = paymentRepository.findAll().stream()
+                .anyMatch(payment -> payment.getRental().equals(rental));
+        if (check) {
+            throw new PaymentException(
+                    "You have already payment for this rental! New payment can not be created!");
+        }
+    }
+
     private String getCarName(Payment payment) {
-        return payment.getRental().getCar().getBrand()
-                + " " + payment.getRental().getCar().getModel();
+        return payment.getRental().getCar().getModel();
     }
 
     private Long countTotal(Payment payment) {

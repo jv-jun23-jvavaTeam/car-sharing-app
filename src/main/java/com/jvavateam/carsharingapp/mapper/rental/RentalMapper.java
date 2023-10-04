@@ -26,7 +26,6 @@ public interface RentalMapper {
     RentalReturnResponseDto toReturnDto(Rental rental);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "returnDate", ignore = true)
     @Mapping(target = "actualReturnDate", ignore = true)
     @Mapping(target = "car", ignore = true)
     @Mapping(target = "user", ignore = true)
@@ -35,7 +34,6 @@ public interface RentalMapper {
     Rental toModel(CreateRentalByManagerDto rentalDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "returnDate", ignore = true)
     @Mapping(target = "actualReturnDate", ignore = true)
     @Mapping(target = "car", ignore = true)
     @Mapping(target = "user", ignore = true)
@@ -53,5 +51,14 @@ public interface RentalMapper {
         rental.setActive(true);
         rental.setCar(car);
         rental.setUser(user);
+    }
+
+    @AfterMapping
+    default void setUpModel(@MappingTarget Rental rental,
+                            CreateRentalDto rentalDto) {
+        Car car = new Car();
+        car.setId(rentalDto.carId());
+        rental.setActive(true);
+        rental.setCar(car);
     }
 }
