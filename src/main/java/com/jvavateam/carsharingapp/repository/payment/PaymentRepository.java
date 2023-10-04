@@ -2,6 +2,7 @@ package com.jvavateam.carsharingapp.repository.payment;
 
 import com.jvavateam.carsharingapp.model.Payment;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,5 +18,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @EntityGraph("Payment.rental")
     List<Payment> findAllByRentalUserId(Long id);
 
-    Payment findBySessionId(String sessionId);
+    Optional<Payment> findBySessionId(String sessionId);
 }

@@ -1,8 +1,7 @@
-package com.jvavateam.carsharingapp.service.payment;
+package com.jvavateam.carsharingapp.payment;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
-import com.stripe.exception.StripeException;
 import java.util.List;
 
 public interface PaymentService {
@@ -10,7 +9,7 @@ public interface PaymentService {
 
     List<PaymentResponseDto> getAllForUser(Long id);
 
-    PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto) throws StripeException;
+    PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto);
 
     List<PaymentResponseDto> getAllSuccessfulPayments();
 
