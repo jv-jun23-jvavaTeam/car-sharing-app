@@ -141,6 +141,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(TelegramBotException.class)
+    public void handleTelegramBotException(TelegramBotException e) {
+        logger.error("Telegram bot exception occurred", e);
+    }
+
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
         ErrorResponseDto errorResponse = new ErrorResponseDto();
         errorResponse.setTimestamp(LocalDateTime.now());

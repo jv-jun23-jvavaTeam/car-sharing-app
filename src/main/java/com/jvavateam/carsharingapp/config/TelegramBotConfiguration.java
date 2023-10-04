@@ -1,26 +1,29 @@
 package com.jvavateam.carsharingapp.config;
 
-import com.jvavateam.carsharingapp.notification.TelegramBot;
-import org.springframework.beans.factory.annotation.Value;
+import com.jvavateam.carsharingapp.exception.TelegramBotException;
+import com.jvavateam.carsharingapp.notification.telegram.TelegramBotService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+@RequiredArgsConstructor
 @Configuration
 public class TelegramBotConfiguration {
+    private final TelegramBotService telegramBotService;
 
     @Bean
-    TelegramBot telegramBot(@Value(value = "${telegram.bot.name}") String botUserName,
-                            @Value(value = "${telegram.bot.token}") String token) {
+    public BotSession telegramBotSession() {
         try {
-            TelegramBot telegramBot = new TelegramBot(botUserName, token);
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-            telegramBotsApi.registerBot(telegramBot);
-            return telegramBot;
+            return telegramBotsApi.registerBot(telegramBotService);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            throw new TelegramBotException(
+                    "Telegram bot API registration failed",
+                    e);
         }
     }
 }

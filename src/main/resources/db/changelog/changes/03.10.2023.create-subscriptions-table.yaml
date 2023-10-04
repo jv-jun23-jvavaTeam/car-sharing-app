@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-telegram-subscriptions-table
+      id: create-subscriptions-table
       author: admin
       changes:
         - createTable:
-            tableName: telegram_subscriptions
+            tableName: subscriptions
             columns:
               - column:
                   name: user_id

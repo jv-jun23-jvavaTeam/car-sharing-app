@@ -10,12 +10,14 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@NoArgsConstructor
 @Entity
 @Data
-@Table(name = "telegram_subscriptions")
-public class TelegramSubscription {
+@Table(name = "subscriptions")
+public class Subscription {
     @Id
     @Column(name = "user_id")
     private Long id;
@@ -27,4 +29,9 @@ public class TelegramSubscription {
     private User user;
     @Column(name = "chat_id", nullable = false)
     private Long chatId;
+
+    public Subscription(User user, Long chatId) {
+        this.user = user;
+        this.chatId = chatId;
+    }
 }
