@@ -13,7 +13,7 @@ public record CreateRentalByManagerDto(
         LocalDate rentalDate,
 
         @NotNull(message = "Return date cannot be null")
-        @Future
+        @Future(message = "Rental must be at least 1 day")
         @Schema(description = "Return date", example = "2023-10-18")
         LocalDate returnDate,
 
