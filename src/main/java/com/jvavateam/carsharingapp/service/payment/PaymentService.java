@@ -1,13 +1,18 @@
 package com.jvavateam.carsharingapp.service.payment;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
+import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
+import com.stripe.exception.StripeException;
+import java.util.List;
 
 public interface PaymentService {
-    String getAllForCurrentUser();
+    List<PaymentResponseDto> getAllForCurrentUser();
 
-    String createPayment(CreatePaymentRequestDto requestDto);
+    PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto) throws StripeException;
 
-    String getAllSuccessfulPayments();
+    List<PaymentResponseDto> getAllSuccessfulPayments();
 
-    String getAllPausedPayments();
+    List<PaymentResponseDto> getAllPausedPayments();
+
+    void updatePaymentStatus(String sessionId);
 }
