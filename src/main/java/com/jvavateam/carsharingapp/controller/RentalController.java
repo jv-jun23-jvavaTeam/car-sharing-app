@@ -79,7 +79,7 @@ public class RentalController {
         return rentalService.getById(id);
     }
 
-    @PostMapping("/rentals/{id}/return")
+    @PostMapping("/{id}/return")
     @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update rental return date",
