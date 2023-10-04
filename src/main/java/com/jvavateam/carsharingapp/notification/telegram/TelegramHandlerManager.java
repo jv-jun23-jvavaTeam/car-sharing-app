@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.notification.telegram;
 
+import com.jvavateam.carsharingapp.notification.telegram.handlers.DefaultHandler;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,19 +11,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 @Component
 public class TelegramHandlerManager {
-    public static final String DEFAULT_MESSAGE = "Have a nice day!";
+    private final DefaultHandler defaultHandler;
     private final List<TelegramUpdateHandler> handlers;
 
     public SendMessage handleUpdate(Update update) {
         Message message = update.getMessage();
         return handlers.stream()
                 .filter(handler -> handler.isSupport(message.getText()))
-                .map(handler -> handler.handle(update))
+                .map(handler -> handler.handle(message))
                 .findFirst()
-                .orElseGet(
-                        () -> SendMessage.builder()
-                                .chatId(message.getChatId())
-                                .text(DEFAULT_MESSAGE)
-                                .build());
+                .orElseGet(() -> defaultHandler.handle(message));
     }
 }
