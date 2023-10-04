@@ -24,7 +24,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .findByEmail(subscriptionDto.userEmail());
         return user.flatMap(value -> subscriptionRepository.findByChatId(subscriptionDto.chatId())
                 .or(() -> createNew(subscriptionDto, value)));
-
     }
 
     @Override

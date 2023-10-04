@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-subscriptions-table
-      author: admin
+      author: Dmytro Martyshchuk
       changes:
         - createTable:
             tableName: subscriptions
