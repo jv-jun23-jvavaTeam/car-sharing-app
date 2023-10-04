@@ -49,8 +49,8 @@ public class SpringSecurityTestConfig {
 
         User admin = new User();
         admin.setId(3L);
-        admin.setEmail("manager@example.com");
-        admin.setPassword("$2a$10$eNDxAZLdjj7A42/3t6t/lu9YigNljFK2bk9HSabaM3wGEYMv.6dYK");
+        admin.setEmail("manager@gmail.com");
+        admin.setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW");
         admin.setFirstName("Super");
         admin.setLastName("Manager");
         admin.setRoles(Set.of(managerRole));

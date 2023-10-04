@@ -1,5 +1,11 @@
 package com.jvavateam.carsharingapp.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
@@ -13,12 +19,32 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(MockitoExtension.class)
 public class RentalControllerTest {
+    protected static MockMvc mockMvc;
+    private static final String OLEH_EMAIL = "wylo@ua.com";
     private static final LocalDate RENTAL_DATE = LocalDate.of(2023, 10, 3);
     private static final LocalDate RETURN_DATE = LocalDate.of(2023, 10, 18);
     private static final LocalDate ACTUAL_RETURN_DATE = LocalDate.of(2023, 10, 18);
@@ -145,4 +171,48 @@ public class RentalControllerTest {
             "classpath:database/user/remove-100th-user-from-users-table.sql";
     private static final String CLEAR_CAR_TABLE =
             "classpath:database/car/remove-100th-car-from-cars-table.sql";
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void beforeAll(@Autowired WebApplicationContext applicationContext) {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(applicationContext)
+                .apply(springSecurity())
+                .build();
+    }
+
+    @Test
+    @Sql(
+            scripts = {
+                    ADD_USER,
+                    ADD_TOYOTA_CAR
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = {
+                    CLEAR_RENTAL_TABLE,
+                    CLEAR_CAR_TABLE,
+                    CLEAR_USER_TABLE
+            },
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
+    @WithUserDetails(OLEH_EMAIL)
+    @DisplayName("Creating book with valid book params. Ok Status and DTO Expected")
+    void create_withValidBook_returnCreatedBookDto() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(post("/rentals")
+                        .content(objectMapper.writeValueAsString(REQUEST_CREATE_RENTAL_DTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        RentalResponseDto actual =
+                objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalResponseDto.class);
+
+        assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
+    }
+
 }

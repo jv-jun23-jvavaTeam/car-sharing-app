@@ -4,6 +4,7 @@ import static com.jvavateam.carsharingapp.model.Role.RoleName.CUSTOMER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.jvavateam.carsharingapp.config.SpringSecurityTestConfig;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.Role;
@@ -20,26 +21,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
+@Import(SpringSecurityTestConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith(MockitoExtension.class)
 public class RentalRepositoryTest {
-    private static final LocalDate RENTAL_DATE = LocalDate.of(2023, 10, 3);
-    private static final LocalDate RETURN_DATE = LocalDate.of(2023, 10, 18);
+    private static final String OLEH_EMAIL = "wylo@ua.com";
+    private static final LocalDate RENTAL_DATE = LocalDate.of(2023, 11, 5);
+    private static final LocalDate RETURN_DATE = LocalDate.of(2023, 11, 20);
+    private static final LocalDate ACTUAL_RETURN_DATE = LocalDate.of(2023, 11, 20);
     private static final Long CAR_ID = 100L;
     private static final Long USER_ID = 100L;
     private static final Long RENTAL_ID = 100L;
-    private static final String OLEH_EMAIL = "wylo@ua.com";
 
     private static final Car FOREIGN_KEY_CAR = new Car()
             .setId(CAR_ID)
@@ -52,6 +49,7 @@ public class RentalRepositoryTest {
             .setId(RENTAL_ID)
             .setRentalDate(RENTAL_DATE)
             .setReturnDate(RETURN_DATE)
+            .setActualReturnDate(ACTUAL_RETURN_DATE)
             .setCar(FOREIGN_KEY_CAR)
             .setUser(FOREIGN_KEY_USER)
             .setActive(true);
@@ -74,7 +72,6 @@ public class RentalRepositoryTest {
 
 
     @Test
-    @DisplayName("Verify returned rental by id")
     @Sql(
             scripts = {
                     ADD_TOYOTA_CAR,
@@ -89,7 +86,8 @@ public class RentalRepositoryTest {
                     CLEAR_CAR_TABLE
             }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
-    @WithUserDetails("wylo@ua.com")
+    @WithUserDetails(OLEH_EMAIL)
+    @DisplayName("Verify returned rental by id")
     public void getByIdForCurrentUser_validRentalId_shouldReturnUserRental() {
         Optional<Rental> rentalById = rentalRepository.getByIdForCurrentUser(RENTAL_ID);
         assertTrue(rentalById.isPresent());

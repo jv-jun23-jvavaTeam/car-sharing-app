@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String DATA_INTEGRITY_VIOLATION_MESSAGE =
             "An error occurred while processing the request. "
             + "You are attempting to add data "
-            + "that violates a unique constraint in the database: ";
+            + "that violates a constraint in the database: ";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
