@@ -54,4 +54,13 @@ public interface RentalMapper {
         rental.setCar(car);
         rental.setUser(user);
     }
+
+    @AfterMapping
+    default void setUpModel(@MappingTarget Rental rental,
+                            CreateRentalDto rentalDto) {
+        Car car = new Car();
+        car.setId(rentalDto.carId());
+        rental.setActive(true);
+        rental.setCar(car);
+    }
 }
