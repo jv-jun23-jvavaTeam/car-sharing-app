@@ -9,7 +9,7 @@ public interface PaymentService {
 
     List<PaymentResponseDto> getAllForUser(Long id);
 
-    PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto);
+    PaymentResponseDto create(CreatePaymentRequestDto requestDto);
 
     List<PaymentResponseDto> getAllSuccessfulPayments();
 
