@@ -9,5 +9,5 @@ public record RentalReturnResponseDto(
         LocalDate actualReturnDate,
         Long carId,
         Long userId,
-        boolean isActive) {
+        Boolean isActive) {
 }
