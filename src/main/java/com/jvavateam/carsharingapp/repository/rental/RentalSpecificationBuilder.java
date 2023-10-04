@@ -17,11 +17,11 @@ public class RentalSpecificationBuilder implements SpecificationBuilder<Rental> 
     public Specification<Rental> build(RentalSearchParameters searchParameters) {
         Specification<Rental> spec = Specification.where(null);
         if (searchParameters.isActive() != null) {
-            spec = spec.and(rentalSpecificationProviderManager.getSpecificationProvider("is_active")
+            spec = spec.and(rentalSpecificationProviderManager.getBooleanSpecificationProvider("is_active")
                     .getSpecification(searchParameters.isActive()));
         }
         if (searchParameters.userId() != null) {
-            spec = spec.and(rentalSpecificationProviderManager.getSpecificationProvider("user_id")
+            spec = spec.and(rentalSpecificationProviderManager.getLongSpecificationProvider("user_id")
                     .getSpecification(searchParameters.userId()));
         }
         return spec;

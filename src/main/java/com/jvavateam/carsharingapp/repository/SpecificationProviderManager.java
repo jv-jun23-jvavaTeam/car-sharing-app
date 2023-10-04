@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.repository;
 
 public interface SpecificationProviderManager<T> {
-    SpecificationProvider<T> getSpecificationProvider(String key);
+    SpecificationBooleanProvider<T> getBooleanSpecificationProvider(String key);
+    SpecificationLongProvider<T> getLongSpecificationProvider(String key);
 }
