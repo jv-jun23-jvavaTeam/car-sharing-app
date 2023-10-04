@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class DateRangeValidator implements ConstraintValidator<DateRange, Object> {
     private static final String RENTAL_DATE_FIELD_NAME = "rentalDate";
     private static final String RETURN_DATE_FIELD_NAME = "returnDate";
+
     @Override
     public boolean isValid(Object dto, ConstraintValidatorContext context) {
         if (dto == null) {
@@ -30,4 +31,3 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
         return field.get(object);
     }
 }
-
