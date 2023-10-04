@@ -7,8 +7,8 @@ import java.time.temporal.ChronoUnit;
 public class PaymentTotalCalculatorForPayment implements PaymentTotalCalculator {
     @Override
     public Long calculateTotal(Payment payment) {
-        long daysToRent = ChronoUnit.DAYS.between(payment.getRental().getReturnDate(),
-                payment.getRental().getRentalDate());
+        long daysToRent = ChronoUnit.DAYS.between(payment.getRental().getRentalDate(),
+                payment.getRental().getReturnDate());
         BigDecimal total = payment.getRental().getCar().getDailyFee()
                 .multiply(BigDecimal.valueOf(daysToRent));
         return total.longValue();

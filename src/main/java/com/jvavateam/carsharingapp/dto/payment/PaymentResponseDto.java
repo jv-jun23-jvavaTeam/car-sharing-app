@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 
 public record PaymentResponseDto(
         Long id,
-        String Status,
+        String status,
         String type,
         String sessionUrl,
         String sessionId,
         Long rentalId,
-        BigDecimal amountPaid
+        BigDecimal amountToPay
 ) {
 }
