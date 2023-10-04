@@ -155,6 +155,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+  
+    @ExceptionHandler(TelegramBotException.class)
+    public void handleTelegramBotException(TelegramBotException e) {
+        logger.error("Telegram bot exception occurred", e);
+    }
 
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
         ErrorResponseDto errorResponse = new ErrorResponseDto();

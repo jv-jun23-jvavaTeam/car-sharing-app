@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class UserController {
     @Operation(summary = "Retrieve user's info",
             description = "Retrieve current user full information")
     @ResponseStatus(HttpStatus.FOUND)
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public UserResponseDto getUserInfo() {
         return userService.getCurrentUserInfo();
     }
@@ -37,6 +39,7 @@ public class UserController {
     @Operation(summary = "Update user role",
             description = "Update user role by provided user ID and new role")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('MANAGER')")
     public void updateUserRole(@PathVariable Long id, @RequestBody RoleRequestDto role) {
         userService.updateUserRole(id, role);
     }
@@ -45,6 +48,7 @@ public class UserController {
     @Operation(summary = "Update user's info",
             description = "Update current user's full information")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public UserResponseDto updateUserInfo(@RequestBody UserRequestDto request) {
         return userService.updateUserInfo(request);
     }

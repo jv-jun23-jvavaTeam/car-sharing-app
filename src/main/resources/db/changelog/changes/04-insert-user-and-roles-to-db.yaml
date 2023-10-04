@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: email
-                  value: admin@gmail.com
+                  value: manager@gmail.com
               - column:
                   name: first_name
                   value: Bob
