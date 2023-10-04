@@ -1,11 +1,13 @@
 package com.jvavateam.carsharingapp.dto.rental;
 
+import com.jvavateam.carsharingapp.validation.DateRange;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
+@DateRange
 public record CreateRentalDto(
         @NotNull(message = "Rental date cannot be null")
         @FutureOrPresent
