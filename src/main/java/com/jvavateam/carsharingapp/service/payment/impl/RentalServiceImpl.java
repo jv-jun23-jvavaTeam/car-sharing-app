@@ -1,4 +1,4 @@
-package com.jvavateam.carsharingapp.service.impl;
+package com.jvavateam.carsharingapp.service.payment.impl;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
