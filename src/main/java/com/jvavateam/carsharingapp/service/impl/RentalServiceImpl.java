@@ -16,7 +16,6 @@ import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.RentalService;
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -32,12 +31,6 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
-    private User currentUser;
-
-    @PostConstruct
-    public void init() {
-        currentUser = userRepository.getCurrentUser();
-    }
 
     @Override
     @Transactional
@@ -53,6 +46,7 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public List<RentalResponseDto> getAll(RentalSearchParameters searchParameters,
                                           Pageable pageable) {
+        User currentUser = userRepository.getCurrentUser();
         if (!isManager(currentUser)) {
             checkUserAccess(searchParameters.userId());
         }
@@ -107,7 +101,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     private void checkUserAccess(Long requestUserId) {
-        Long currentUserId = currentUser.getId();
+        Long currentUserId = userRepository.getCurrentUser().getId();
         if (requestUserId == null || !requestUserId.equals(currentUserId)) {
             throw new InvalidRequestParametersException("Wrong user id entered: " + requestUserId);
         }
