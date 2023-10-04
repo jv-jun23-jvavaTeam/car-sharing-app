@@ -32,7 +32,7 @@ public class RentalController {
     private final RentalService rentalService;
 
     @PostMapping("/manager")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
@@ -43,7 +43,7 @@ public class RentalController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @Operation(summary = "Place new rental",
             description = "Add a new rental (decrease car inventory by 1)")
     public RentalResponseDto create(@Valid @RequestBody CreateRentalDto createRentalDto) {
@@ -51,7 +51,7 @@ public class RentalController {
     }
 
     @GetMapping("/manager")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all user rentals by manager",
             description = "Get rentals by user ID and whether the rental is still active or not")
@@ -63,7 +63,7 @@ public class RentalController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @Operation(summary = "Get all user rentals",
             description = "Get rentals for current user")
     public List<RentalResponseDto> getAll(Pageable pageable) {
@@ -71,7 +71,7 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get user rental by id",
             description = "Get specific rental")
@@ -80,7 +80,7 @@ public class RentalController {
     }
 
     @PostMapping("/rentals/{id}/return")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update rental return date",
             description = "Set actual return date (increase car inventory by 1)")
