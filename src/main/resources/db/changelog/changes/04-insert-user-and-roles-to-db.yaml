@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: email
-                  value: admin@gmail.com
+                  value: manager@gmail.com
               - column:
                   name: first_name
                   value: Bob
@@ -22,12 +22,6 @@ databaseChangeLog:
       id: insert-roles
       author: sonia_kostashchuk
       changes:
-        - insert:
-            tableName: roles
-            columns:
-              - column:
-                  name: name
-                  value: ADMIN
         - insert:
             tableName: roles
             columns:
