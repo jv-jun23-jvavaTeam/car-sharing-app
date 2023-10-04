@@ -35,9 +35,7 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
-        User user = userRepository.findById(createRentalDto.userId())
-                .orElseThrow(() -> new EntityNotFoundException("User with provided id not found"));
-        checkUserAccess(user);
+        checkUserAccess(createRentalDto.userId());
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
         Rental savedRental = rentalRepository.save(rental);
@@ -50,7 +48,7 @@ public class RentalServiceImpl implements RentalService {
                                           Pageable pageable) {
         User currentUser = userRepository.getCurrentUser();
         if (!isManager(currentUser)) {
-            checkUserAccess(currentUser);
+            checkUserAccess(searchParameters.userId());
         }
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
@@ -102,10 +100,10 @@ public class RentalServiceImpl implements RentalService {
                 .anyMatch(role -> role.getName().equals(Role.RoleName.MANAGER));
     }
 
-    private void checkUserAccess(User user) {
+    private void checkUserAccess(Long requestUserId) {
         Long currentUserId = userRepository.getCurrentUser().getId();
-        if (!user.getId().equals(currentUserId)) {
-            throw new InvalidRequestParametersException("Wrong user id entered: " + user.getId());
+        if (requestUserId == null || !requestUserId.equals(currentUserId)) {
+            throw new InvalidRequestParametersException("Wrong user id entered: " + requestUserId);
         }
     }
 
