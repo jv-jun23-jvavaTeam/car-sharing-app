@@ -2,7 +2,6 @@ package com.jvavateam.carsharingapp.notification.telegram.handlers;
 
 import com.jvavateam.carsharingapp.dto.subscription.SubscriptionDto;
 import com.jvavateam.carsharingapp.model.Subscription;
-import com.jvavateam.carsharingapp.notification.telegram.TelegramUpdateHandler;
 import com.jvavateam.carsharingapp.service.SubscriptionService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 @RequiredArgsConstructor
 @Component
-public class CreateSubscriptionHandler implements TelegramUpdateHandler {
+public class CreateSubscriptionHandler extends AbstractHandler {
     private static final String SUPPORT = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
     private static final String SUCCESS_RESPONSE =
             "You have successfully subscribed to notifications";
@@ -29,6 +28,7 @@ public class CreateSubscriptionHandler implements TelegramUpdateHandler {
         return SendMessage.builder()
                 .chatId(message.getChatId())
                 .text(responseMessage)
+                .replyMarkup(getMainMenu(message))
                 .build();
     }
 

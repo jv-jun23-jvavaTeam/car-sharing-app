@@ -1,25 +1,31 @@
 package com.jvavateam.carsharingapp.notification.telegram.handlers;
 
-import com.jvavateam.carsharingapp.service.SubscriptionService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-@RequiredArgsConstructor
 @Component
-public class UnsubscribeHandler extends AbstractHandler {
-    private static final String SUCCESS_RESPONSE =
-            "You have successfully unsubscribed from notifications";
-    private static final String SUPPORT = "Unsubscribe";
-    private final SubscriptionService subscriptionService;
+public class AboutUsHandler extends AbstractHandler {
+    private static final String SUPPORT = "About us";
+    private static final String CONTACT_INFO =
+            """
+            JVAVA TEAM CAR SHARING SERVICE
+            jvavateam@gmail.com
+            
+            Members:
+            
+            Oleksandr Parkhomovskyi
+            Sofiya Kostashchuk
+            Artem Reizer
+            Ivan Fadieiev
+            Dmytro Martyshchuk
+            """;
 
     @Override
     public SendMessage handle(Message message) {
-        subscriptionService.unsubscribeByChatId(message.getChatId());
         return SendMessage.builder()
                 .chatId(message.getChatId())
-                .text(SUCCESS_RESPONSE)
+                .text(CONTACT_INFO)
                 .replyMarkup(getMainMenu(message))
                 .build();
     }

@@ -33,6 +33,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void unsubscribeByChatId(Long chatId) {
         subscriptionRepository.deleteByChatId(chatId);
     }

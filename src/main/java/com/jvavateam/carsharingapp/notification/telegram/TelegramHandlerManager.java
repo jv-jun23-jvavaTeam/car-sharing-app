@@ -1,6 +1,7 @@
 package com.jvavateam.carsharingapp.notification.telegram;
 
-import com.jvavateam.carsharingapp.notification.telegram.handlers.DefaultHandler;
+import com.jvavateam.carsharingapp.exception.TelegramBotException;
+import com.jvavateam.carsharingapp.notification.telegram.handlers.AbstractHandler;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,8 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 @Component
 public class TelegramHandlerManager {
-    private final DefaultHandler defaultHandler;
-    private final List<TelegramUpdateHandler> handlers;
+    private final List<AbstractHandler> handlers;
 
     public SendMessage handleUpdate(Update update) {
         Message message = update.getMessage();
@@ -20,6 +20,11 @@ public class TelegramHandlerManager {
                 .filter(handler -> handler.isSupport(message.getText()))
                 .map(handler -> handler.handle(message))
                 .findFirst()
-                .orElseGet(() -> defaultHandler.handle(message));
+                .orElseGet(() -> handlers.stream()
+                        .findFirst()
+                        .orElseThrow(() -> new TelegramBotException(
+                                "There is no supported handler")
+                        )
+                        .getDefaultMessage(message));
     }
 }
