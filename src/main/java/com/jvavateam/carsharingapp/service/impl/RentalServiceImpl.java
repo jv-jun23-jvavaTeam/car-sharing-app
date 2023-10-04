@@ -13,6 +13,7 @@ import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.repository.car.CarRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
+import com.jvavateam.carsharingapp.service.CarService;
 import com.jvavateam.carsharingapp.service.RentalService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
-    private final CarRepository carRepository;
+    private final CarService carService;
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
@@ -82,39 +83,30 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalRepository.getByIdForCurrentUser(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can`t find rental with id: " + id));
         Car returnedCar = rental.getCar();
-        increaseCarInventory(returnedCar);
+        increaseCarInventory(returnedCar.getId());
         rental.setActive(false);
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toReturnDto(savedRental);
     }
 
-    private void increaseCarInventory(Car carForIncreasing) {
-        Long increasingCarId = carForIncreasing.getId();
-        Car actualCar = carRepository.findById(increasingCarId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Can`t find car with id: " + increasingCarId));
-        carForIncreasing.setInventory(actualCar.getInventory() + 1);
-        carRepository.save(carForIncreasing);
+    private void increaseCarInventory(Long increasingCarId) {
+        Car carForIncreasing = carService.findById(increasingCarId);
+        carForIncreasing.setInventory(carForIncreasing.getInventory() + 1);
+        carService.update(carForIncreasing);
     }
 
     private void decreaseCarInventory(Long decreasingCarId) {
-        Car actualCar = carRepository.findById(decreasingCarId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Can`t find car with id: " + decreasingCarId));
-        checkCarInventory(actualCar);
-        actualCar.setInventory(actualCar.getInventory() - 1);
-        carRepository.save(actualCar);
+        Car carForDecreasing = carService.findById(decreasingCarId);
+        carForDecreasing.setInventory(carForDecreasing.getInventory() - 1);
+        carService.update(carForDecreasing);
     }
 
     private void checkData(Long requestUserId) {
         if (requestUserId == null) {
             throw new InvalidRequestParametersException("Empty user id entered: " + requestUserId);
         }
-    }
-
-    private void checkCarInventory(Car actualCar) {
-        if (actualCar.getInventory() < 1) {
-            throw new EntityNotFoundException("Can`t create new rental: This car is absent");
+        if (requestUserId == null) {
+            throw new InvalidRequestParametersException("Empty user id entered: " + requestUserId);
         }
     }
 }
