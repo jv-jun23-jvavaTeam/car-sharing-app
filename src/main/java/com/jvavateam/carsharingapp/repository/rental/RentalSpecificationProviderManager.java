@@ -25,6 +25,7 @@ public class RentalSpecificationProviderManager implements SpecificationProvider
                                 "Can`t find correct specification provider for key: "
                                         + key));
     }
+
     @Override
     public SpecificationLongProvider<Rental> getLongSpecificationProvider(String key) {
         return rentalSpecificationLongProviders.stream()

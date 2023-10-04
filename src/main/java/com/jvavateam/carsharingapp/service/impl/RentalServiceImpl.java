@@ -85,7 +85,8 @@ public class RentalServiceImpl implements RentalService {
 
     private void decreaseCarInventory(Long decreasingCarId) {
         Car actualCar = carRepository.findById(decreasingCarId)
-                .orElseThrow(() -> new EntityNotFoundException("Can`t find car with id: " + decreasingCarId));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Can`t find car with id: " + decreasingCarId));
         checkCarInventory(actualCar);
         actualCar.setInventory(actualCar.getInventory() - 1);
         carRepository.save(actualCar);
