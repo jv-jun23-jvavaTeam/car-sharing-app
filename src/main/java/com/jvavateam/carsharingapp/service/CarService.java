@@ -12,9 +12,13 @@ public interface CarService {
 
     CarDtoResponse update(CarDtoRequest carDto, Long id);
 
+    Car update(Car car);
+
     List<CarDtoResponse> getAll();
 
     void deleteById(Long id);
 
-    void updateCarInventory(Car car);
+    void updateInventory(Car car);
+
+    Car findById(Long id);
 }
