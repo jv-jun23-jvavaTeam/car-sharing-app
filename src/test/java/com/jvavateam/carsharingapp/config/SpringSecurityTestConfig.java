@@ -27,14 +27,6 @@ public class SpringSecurityTestConfig {
         Role customerRole = new Role();
         customerRole.setName(Role.RoleName.CUSTOMER);
 
-        User harry = new User();
-        harry.setId(1L);
-        harry.setEmail("harry@example.com");
-        harry.setPassword("$2a$10$eNDxAZLdjj7A42/3t6t/lu9YigNljFK2bk9HSabaM3wGEYMv.6dYK");
-        harry.setFirstName("Harry");
-        harry.setLastName("Potter");
-        harry.setRoles(Set.of(customerRole));
-
         User oleh = new User();
         oleh.setId(100L);
         oleh.setEmail("wylo@ua.com");
@@ -48,15 +40,14 @@ public class SpringSecurityTestConfig {
         managerRole.setName(Role.RoleName.MANAGER);
 
         User admin = new User();
-        admin.setId(3L);
-        admin.setEmail("manager@gmail.com");
-        admin.setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW");
+        admin.setId(101L);
+        admin.setEmail("super_manager@gmail.com");
+        admin.setPassword("123456789");
         admin.setFirstName("Super");
         admin.setLastName("Manager");
         admin.setRoles(Set.of(managerRole));
 
         Map<String, User> users = Map.of(
-                harry.getEmail(), harry,
                 oleh.getEmail(), oleh,
                 admin.getEmail(), admin
         );

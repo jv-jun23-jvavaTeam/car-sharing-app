@@ -9,10 +9,12 @@ import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
+import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.service.CarService;
 import com.jvavateam.carsharingapp.service.RentalService;
+import com.jvavateam.carsharingapp.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
     private final CarService carService;
+    private final UserService userService;
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
@@ -43,6 +46,8 @@ public class RentalServiceImpl implements RentalService {
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
+        User currentUser = userService.getAuthentificatedUser();
+        rental.setUser(currentUser);
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toDto(savedRental);
     }

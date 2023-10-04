@@ -61,7 +61,7 @@ public class RentalRepositoryTest {
     private static final String ADD_RENTAL =
             "classpath:database/rental/add-100th-rental-to-rentals-table.sql";
     private static final String CLEAR_RENTAL_TABLE =
-            "classpath:database/rental/remove-100th-rental-from-rentals-table.sql.sql";
+            "classpath:database/rental/remove-101th-rental-from-rentals-table.sql.sql";
     private static final String CLEAR_USER_TABLE =
             "classpath:database/user/remove-100th-user-from-users-table.sql";
     private static final String CLEAR_CAR_TABLE =
