@@ -20,5 +20,5 @@ public interface CarService {
 
     Car findCarById(Long id);
 
-    Car updateCar(Car car);
+    Car update(Car car);
 }

@@ -57,14 +57,14 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Car updateCar(Car car) {
+    public Car update(Car car) {
         Car updatedCar = new Car();
         updatedCar.setBrand(car.getBrand());
         updatedCar.setModel(car.getModel());
         updatedCar.setType(car.getType());
         updatedCar.setInventory(car.getInventory());
         updatedCar.setDailyFee(car.getDailyFee());
-        return updatedCar;
+        return carRepository.save(updatedCar);
     }
 
     @Override
