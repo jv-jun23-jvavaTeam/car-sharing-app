@@ -3,6 +3,7 @@ package com.jvavateam.carsharingapp.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
@@ -10,6 +11,7 @@ import com.jvavateam.carsharingapp.dto.rental.CreateRentalDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
+import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
@@ -73,13 +75,6 @@ class RentalServiceTest {
             CAR_ID,
             USER_ID
     );
-    static final CreateRentalByManagerDto WRONG_REQUEST_CREATE_RENTAL_BY_MANAGER_DTO =
-            new CreateRentalByManagerDto(
-                    RENTAL_DATE,
-                    RETURN_DATE,
-                    CAR_ID,
-                    USER_ID
-            );
 
     private static final Rental CREATED_RENTAL = new Rental()
             .setId(RENTAL_ID)
@@ -242,5 +237,32 @@ class RentalServiceTest {
 
         RentalReturnResponseDto actual = rentalService.completeRental(SECOND_RENTAL_ID);
         assertEquals(RENTAL_RETURN_RESPONSE_DTO, actual);
+    }
+
+    @Test
+    @DisplayName("Verify creating rental with invalid car ID throws EntityNotFoundException")
+    void create_invalidCarId_shouldThrowEntityNotFoundException() {
+        when(carService.findById(CAR_ID)).thenThrow(new EntityNotFoundException("Car not found"));
+
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> rentalService.create(REQUEST_CREATE_RENTAL_DTO)
+        );
+
+        assertEquals("Car not found", exception.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("Verify complete rental with invalid ID throws EntityNotFoundException")
+    void completeRental_invalidRentalId_shouldThrowEntityNotFoundException() {
+        when(rentalRepository.getByIdForCurrentUser(SECOND_RENTAL_ID)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> rentalService.completeRental(SECOND_RENTAL_ID)
+        );
+
+        assertEquals("Can`t find rental with id: " + SECOND_RENTAL_ID, exception.getMessage());
     }
 }
