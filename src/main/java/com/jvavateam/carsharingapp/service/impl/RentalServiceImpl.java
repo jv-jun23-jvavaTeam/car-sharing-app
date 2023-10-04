@@ -104,7 +104,8 @@ public class RentalServiceImpl implements RentalService {
         }
         if (!isManager(currentUser)) {
             if (!requestUserId.equals(currentUser.getId())) {
-                throw new InvalidRequestParametersException("Wrong user id entered: " + requestUserId);
+                throw new InvalidRequestParametersException("Wrong user id entered: "
+                        + requestUserId);
             }
         }
     }
