@@ -6,7 +6,6 @@ import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
 import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
-import com.jvavateam.carsharingapp.exception.InvalidRequestParametersException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
@@ -32,8 +31,6 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto createByManager(CreateRentalByManagerDto createRentalByManagerDto) {
-        checkUserId(createRentalByManagerDto.userId());
-        checkCarId(createRentalByManagerDto.carId());
         decreaseCarInventory(createRentalByManagerDto.carId());
         Rental rental = rentalMapper.toModel(createRentalByManagerDto);
         Rental savedRental = rentalRepository.save(rental);
@@ -43,7 +40,6 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
-        checkCarId(createRentalDto.carId());
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
         Rental savedRental = rentalRepository.save(rental);
@@ -54,7 +50,6 @@ public class RentalServiceImpl implements RentalService {
     @Transactional
     public List<RentalResponseDto> getAllByManager(RentalSearchParameters searchParameters,
                                                    Pageable pageable) {
-        checkUserId(searchParameters.userId());
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
 
@@ -100,17 +95,5 @@ public class RentalServiceImpl implements RentalService {
         Car carForDecreasing = carService.findById(decreasingCarId);
         carForDecreasing.setInventory(carForDecreasing.getInventory() - 1);
         carService.update(carForDecreasing);
-    }
-
-    private void checkUserId(Long requestUserId) {
-        if (requestUserId == null) {
-            throw new InvalidRequestParametersException("Empty user id entered");
-        }
-    }
-
-    private void checkCarId(Long requestCarId) {
-        if (requestCarId == null) {
-            throw new InvalidRequestParametersException("Empty user id entered");
-        }
     }
 }
