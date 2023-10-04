@@ -13,6 +13,7 @@ import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.service.CarService;
 import com.jvavateam.carsharingapp.service.RentalService;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -80,6 +81,7 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new EntityNotFoundException("Can`t find rental with id: " + id));
         Car returnedCar = rental.getCar();
         increaseCarInventory(returnedCar.getId());
+        rental.setActualReturnDate(LocalDate.now());
         rental.setActive(false);
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toReturnDto(savedRental);
