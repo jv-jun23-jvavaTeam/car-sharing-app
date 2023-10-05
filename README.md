@@ -61,8 +61,6 @@ Our application offers the following functionalities:
 
 ## Getting started
 
-### Database Configuration
-
 
 * **Database Configuration**:
 
