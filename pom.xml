@@ -22,7 +22,6 @@
         <mysql.version>8.0.33</mysql.version>
         <openapi.version>2.1.0</openapi.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <stripe.version>23.0.0</stripe.version>
     </properties>
     <dependencies>
         <dependency>
@@ -119,11 +118,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-docker-compose</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
