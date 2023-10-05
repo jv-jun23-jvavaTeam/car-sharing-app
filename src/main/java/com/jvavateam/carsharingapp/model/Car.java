@@ -20,6 +20,7 @@ import org.hibernate.annotations.Where;
 @Accessors(chain = true)
 @Where(clause = "is_deleted = false")
 @Table(name = "cars")
+@Accessors(chain = true)
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
