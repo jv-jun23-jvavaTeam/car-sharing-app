@@ -1,2 +1,2 @@
 DELETE
-FROM user_roles;
+FROM user_roles WHERE user_id = 100;
