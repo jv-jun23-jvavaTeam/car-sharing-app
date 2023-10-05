@@ -87,6 +87,11 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toReturnDto(savedRental);
     }
 
+    @Override
+    public List<Rental> getAllOverdueRentals() {
+        return rentalRepository.findAllOverdue(LocalDate.now());
+    }
+
     private void increaseCarInventory(Long increasingCarId) {
         Car carForIncreasing = carService.findById(increasingCarId);
         carForIncreasing.setInventory(carForIncreasing.getInventory() + 1);
