@@ -14,13 +14,13 @@ public interface RentalRepository extends JpaRepository<Rental, Long>,
 
     @EntityGraph(attributePaths = {"car", "user"})
     @Query("""
-            FROM Rental r 
+            FROM Rental r
             WHERE r.id = :id
             AND r.user.id = ?#{principal?.id}
             """)
     Optional<Rental> getByIdForCurrentUser(Long id);
 
-    @EntityGraph
+    @EntityGraph(attributePaths = {"car", "user"})
     @Query("""
                 FROM Rental r
                 WHERE r.rentalDate > :tomorrow
