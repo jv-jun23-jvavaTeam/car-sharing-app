@@ -1,15 +1,16 @@
-package com.jvavateam.carsharingapp.service.payment;
+package com.jvavateam.carsharingapp.payment;
 
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
+import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.exception.PaymentException;
 import com.jvavateam.carsharingapp.mapper.payment.PaymentMapper;
 import com.jvavateam.carsharingapp.model.Payment;
 import com.jvavateam.carsharingapp.model.Rental;
+import com.jvavateam.carsharingapp.payment.calculator.PaymentCalculationsHandler;
+import com.jvavateam.carsharingapp.payment.calculator.TotalCalculator;
 import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
-import com.jvavateam.carsharingapp.service.payment.calculator.PaymentCalculationsHandler;
-import com.jvavateam.carsharingapp.service.payment.calculator.PaymentTotalCalculator;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Price;
@@ -32,11 +33,12 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String CURRENCY_NAME = "usd";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
+    private static final Long PRICE_MULTIPLIER = 100L;
 
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
-    private PaymentTotalCalculator calculator;
+    private TotalCalculator calculator;
 
     @Value("${baseApiUrl}")
     private String baseApiUrl;
@@ -63,12 +65,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto) {
+    public PaymentResponseDto create(CreatePaymentRequestDto requestDto) {
         Stripe.apiKey = stripeKey;
         existsPendingPayment();
 
         Payment payment = paymentMapper.toEntity(requestDto);
-        Rental rental = rentalRepository.getReferenceById(requestDto.rentalId());
+        Rental rental = getRentalById(requestDto.rentalId());
+
         existsPaymentForRental(rental);
 
         checkRentalDates(rental);
@@ -103,9 +106,22 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void updatePaymentStatus(String sessionId) {
-        Payment payment = paymentRepository.findBySessionId(sessionId);
+        Payment payment = getPaymentBySessionId(sessionId);
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
+    }
+
+    private Payment getPaymentBySessionId(String sessionId) {
+        Payment payment = paymentRepository.findBySessionId(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find payment by session id: " + sessionId));
+        return payment;
+    }
+
+    private Rental getRentalById(Long id) {
+        Rental rental = rentalRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't find rental by id: " + id));
+        return rental;
     }
 
     private Session createSession(Payment payment) {
@@ -140,7 +156,7 @@ public class PaymentServiceImpl implements PaymentService {
         PriceCreateParams priceParams = PriceCreateParams.builder()
                 .setCurrency(CURRENCY_NAME)
                 .setProduct(product.getId())
-                .setUnitAmount(countTotal(payment))
+                .setUnitAmount(countTotal(payment) * PRICE_MULTIPLIER)
                 .build();
         Price price = null;
         try {
@@ -155,7 +171,7 @@ public class PaymentServiceImpl implements PaymentService {
         ProductCreateParams productParams = new ProductCreateParams.Builder()
                 .setName(getCarName(payment))
                 .setDefaultPriceData(ProductCreateParams.DefaultPriceData.builder()
-                        .setUnitAmount(countTotal(payment))
+                        .setUnitAmount(countTotal(payment) * PRICE_MULTIPLIER)
                         .setCurrency(CURRENCY_NAME)
                         .build())
                 .build();

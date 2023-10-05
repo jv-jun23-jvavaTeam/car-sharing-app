@@ -1,10 +1,10 @@
-package com.jvavateam.carsharingapp.service.payment.calculator;
+package com.jvavateam.carsharingapp.payment.calculator;
 
 import com.jvavateam.carsharingapp.model.Payment;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 
-public class PaymentTotalCalculatorForFee implements PaymentTotalCalculator {
+public class FeeCalculator implements TotalCalculator {
     private static BigDecimal FEE_PERCENTAGE = BigDecimal.valueOf(0.10);
 
     @Override

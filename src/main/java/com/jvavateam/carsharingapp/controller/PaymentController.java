@@ -3,8 +3,7 @@ package com.jvavateam.carsharingapp.controller;
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentOperationMessage;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
-import com.jvavateam.carsharingapp.service.payment.PaymentService;
-import com.stripe.exception.StripeException;
+import com.jvavateam.carsharingapp.payment.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +29,8 @@ public class PaymentController {
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @Operation(summary = "Create new payment session",
             description = "Create new payment session")
-    public PaymentResponseDto createPayment(@RequestBody CreatePaymentRequestDto requestDto)
-            throws StripeException {
-        return paymentService.createPayment(requestDto);
+    public PaymentResponseDto createPayment(@RequestBody CreatePaymentRequestDto requestDto) {
+        return paymentService.create(requestDto);
     }
 
     @GetMapping
