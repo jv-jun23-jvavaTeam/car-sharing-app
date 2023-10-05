@@ -16,6 +16,7 @@ import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NamedEntityGraph(name = "User.roles",
         attributeNodes = @NamedAttributeNode("roles")
 )
+@Accessors(chain = true)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

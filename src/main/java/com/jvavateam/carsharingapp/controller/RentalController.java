@@ -26,15 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/rentals")
-@Tag(name = "Orders management",
-        description = "Endpoints for managing user orders")
+@Tag(name = "Rentals management",
+        description = "Endpoints for managing user rentals")
 public class RentalController {
     private final RentalService rentalService;
 
     @PostMapping("/manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Place new rental",
+    @Operation(summary = "Place new rental by manager",
             description = "Add a new rental (decrease car inventory by 1)")
     public RentalResponseDto createByManager(
             @Valid @RequestBody CreateRentalByManagerDto createRentalByManagerDto) {
