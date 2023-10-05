@@ -15,6 +15,12 @@ Welcome to the Car Sharing Service, an online platform for managing car rentals.
 This system simplifies the process of renting cars, managing inventory,
 and handling payments.
 
+<div style="display: flex; justify-content: center;">
+    <span style="display: inline-block; border: 5px solid #30558a; border-radius: 25px; padding: 7px;">
+        <img src="paintings/telegram-example.png" alt="Car Sharing Service" style="border-radius: 10px; width: 350px">
+    </span>
+</div>
+
 Whether you're a customer looking to rent a car or an administrator overseeing the service, this README will guide you through the key aspects of our application.
 
 
