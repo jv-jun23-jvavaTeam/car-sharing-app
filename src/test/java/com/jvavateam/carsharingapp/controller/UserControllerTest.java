@@ -79,6 +79,7 @@ public class UserControllerTest {
     @DisplayName("Verify getUserInfo() method works")
     @WithUserDetails(USER_EMAIL)
     @Sql(scripts = {
+            ClEAR_ROLES,
             ADD_USER,
             ADD_ROLES,
             ADD_USER_ROLE_RELATION

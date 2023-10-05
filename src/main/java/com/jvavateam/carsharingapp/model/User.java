@@ -26,7 +26,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @Table(name = "users")
 @Entity
-@Accessors(chain = true)
 @SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id=?")
 @Where(clause = "is_deleted=false")
 @NamedEntityGraph(name = "User.roles",
