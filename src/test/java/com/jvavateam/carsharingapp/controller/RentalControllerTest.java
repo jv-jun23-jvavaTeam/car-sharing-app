@@ -361,7 +361,6 @@ public class RentalControllerTest {
     @Sql(
             scripts = {
                     ADD_TOYOTA_CAR,
-                    INSERT_ROLES,
                     ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
                     ADD_FIRST_RENTAL,
