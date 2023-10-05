@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/rentals")
-@Tag(name = "Orders management",
+@Tag(name = "Rentals management",
         description = "Endpoints for managing user orders")
 public class RentalController {
     private final RentalService rentalService;
