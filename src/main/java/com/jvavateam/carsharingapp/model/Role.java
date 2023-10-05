@@ -9,10 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @Table(name = "roles")
 @Entity
+@Accessors(chain = true)
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

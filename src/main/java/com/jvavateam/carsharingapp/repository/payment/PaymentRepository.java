@@ -15,7 +15,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("FROM Payment p JOIN FETCH p.rental r WHERE r.user.id = ?#{principal?.id}")
     List<Payment> findAll();
 
-    @EntityGraph("Payment.rental")
+    @EntityGraph(attributePaths = {"rental"})
     List<Payment> findAllByRentalUserId(Long id);
 
     Optional<Payment> findBySessionId(String sessionId);

@@ -22,6 +22,7 @@
         <mysql.version>8.0.33</mysql.version>
         <openapi.version>2.1.0</openapi.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <stripe.version>23.0.0</stripe.version>
     </properties>
     <dependencies>
         <dependency>
@@ -108,7 +109,7 @@
         <dependency>
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
-            <version>23.0.0</version>
+            <version>${stripe.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>

@@ -17,9 +17,9 @@ import org.hibernate.annotations.Where;
 @Entity
 @Data
 @SQLDelete(sql = "UPDATE cars SET is_deleted = true WHERE id = ?")
+@Accessors(chain = true)
 @Where(clause = "is_deleted = false")
 @Table(name = "cars")
-@Accessors(chain = true)
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

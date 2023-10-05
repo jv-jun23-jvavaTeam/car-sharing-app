@@ -80,16 +80,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentResponseDto create(CreatePaymentRequestDto requestDto) {
         Stripe.apiKey = stripeKey;
-        existsPendingPayment();
+        existsPendingPayment(requestDto.paymentType());
 
         Payment payment = paymentMapper.toEntity(requestDto);
         Rental rental = getRentalById(requestDto.rentalId());
 
-        existsPaymentForRental(rental);
-
+        existsPaymentForRental(rental, payment);
         checkRentalDates(rental);
 
         payment.setRental(rental);
+
         Session session = createSession(payment);
 
         payment.setSessionUrl(session.getUrl());
@@ -209,21 +209,24 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void existsPendingPayment() {
+    private void existsPendingPayment(String type) {
         boolean check = paymentRepository.findAll().stream()
-                .anyMatch(payment -> payment.getStatus().equals(Payment.Status.PENDING));
+                .anyMatch(payment -> payment.getStatus().equals(Payment.Status.PENDING)
+                        && payment.getType().name().equals(type));
         if (check) {
             throw new PaymentException(
                     "You have  unpaid payments! New payment can not be created!");
         }
     }
 
-    private void existsPaymentForRental(Rental rental) {
+    private void existsPaymentForRental(Rental rental, Payment payment) {
         boolean check = paymentRepository.findAll().stream()
-                .anyMatch(payment -> payment.getRental().equals(rental));
+                .anyMatch(p -> p.getRental().equals(rental)
+                        && p.getType().equals(payment.getType()));
         if (check) {
             throw new PaymentException(
-                    "You have already payment for this rental! New payment can not be created!");
+                    "You have already payment with type " + payment.getType()
+                            + " for this rental! New payment can not be created!");
         }
     }
 

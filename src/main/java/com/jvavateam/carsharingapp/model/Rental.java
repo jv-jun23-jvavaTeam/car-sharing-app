@@ -20,9 +20,9 @@ import org.hibernate.annotations.Where;
 @Data
 @Entity
 @SQLDelete(sql = "UPDATE rental SET is_deleted = true WHERE id = ?")
+@Accessors(chain = true)
 @Where(clause = "is_deleted=false")
 @Table(name = "rentals")
-@Accessors(chain = true)
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
