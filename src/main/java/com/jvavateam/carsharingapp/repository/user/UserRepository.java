@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("FROM User u WHERE u.id = ?#{ principal?.id }")
     User getCurrentUser();
+
+    User save(User user);
 }

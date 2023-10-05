@@ -23,18 +23,18 @@ public class UserRepositoryTest {
             .setPassword("Denzel123456")
             .setFirstName("Denzel")
             .setLastName("Denzel");
-    private static final User JOHN = new User()
-            .setId(1L)
-            .setEmail("john@mail.com")
-            .setPassword("John1234")
-            .setFirstName("John")
-            .setLastName("Smith");
+    private static final User OLEH = new User()
+            .setId(100L)
+            .setEmail("wylo@ua.com")
+            .setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW")
+            .setFirstName("Oleh")
+            .setLastName("Lyashko");
     private static final String INVALID_EMAIL = "invalid@mail.com";
-    private static final String JOHN_EMAIL = "john@mail.com";
+    private static final String OLEH_EMAIL = "wylo@ua.com";
     private static final String CLEAR_USERS_TABLE =
-            "classpath:database/scripts/user/clear-users-table.sql";
+            "classpath:database/user/delete-all-users.sql";
     private static final String ADD_USER =
-            "classpath:database/scripts/user/add-user-to-users-table.sql";
+            "classpath:database/user/add-sample-user-to-users-table.sql";
     @Autowired
     private UserRepository userRepository;
 
@@ -51,7 +51,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("Verify findByEmail() method works")
+    @DisplayName("Verify findByEmail() method doesn't work with invalid email")
     @Sql(scripts = {
             CLEAR_USERS_TABLE
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -62,7 +62,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @WithUserDetails(JOHN_EMAIL)
+    @WithUserDetails(OLEH_EMAIL)
     @DisplayName("Verify getCurrentUser() method works")
     @Sql(scripts = {
             ADD_USER
@@ -72,11 +72,11 @@ public class UserRepositoryTest {
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void getCurrentUser_ValidUser_ReturnsTrue() {
         User currentUser = userRepository.getCurrentUser();
-        Assertions.assertEquals(currentUser, JOHN);
+        Assertions.assertEquals(currentUser, OLEH);
     }
 
     @Test
-    @WithUserDetails(JOHN_EMAIL)
+    @WithUserDetails(OLEH_EMAIL)
     @DisplayName("Verify getCurrentUser() method doesn't work")
     @Sql(scripts = {
             ADD_USER

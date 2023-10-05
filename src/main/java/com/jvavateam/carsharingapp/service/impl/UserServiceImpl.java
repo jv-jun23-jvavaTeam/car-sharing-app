@@ -11,10 +11,12 @@ import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.UserService;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +32,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateUserRole(Long id, RoleRequestDto role) {
         User userForRoleUpdating = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User with such ID doesn't exists"));
         Role roleToUpdate = roleRepository.getRoleByName(Role.RoleName.valueOf(role.status()));
-        userForRoleUpdating.setRoles(Set.of(roleToUpdate));
+        HashSet<Role> roles = new HashSet<>();
+        roles.add(roleToUpdate);
+        userForRoleUpdating.setRoles(roles);
         userRepository.save(userForRoleUpdating);
     }
 
     @Override
+    @Transactional
     public UserResponseDto updateUserInfo(UserRequestDto userRequestDto) {
         User userForInfoUpdating = userMapper.toModel(userRequestDto);
         userForInfoUpdating.setId(userRepository.getCurrentUser().getId());
@@ -46,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDto register(UserRequestDto request)
             throws RegistrationException {
         if (userRepository.findByEmail(request.email()).isPresent()) {

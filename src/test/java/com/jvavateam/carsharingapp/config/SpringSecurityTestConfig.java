@@ -23,40 +23,31 @@ public class SpringSecurityTestConfig {
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
-        Role customer = new Role().setName(Role.RoleName.CUSTOMER);
-        Role manager = new Role().setName(Role.RoleName.MANAGER);
+        Role customerRole = new Role();
+        customerRole.setName(Role.RoleName.CUSTOMER);
 
-        User john = new User()
-                .setId(1L)
-                .setEmail("john@mail.com")
-                .setPassword("John1234")
-                .setFirstName("John")
-                .setLastName("Smith")
-                .setDeleted(false)
-                .setRoles(Set.of(customer));
+        User oleh = new User()
+                .setId(100L)
+                .setEmail("wylo@ua.com")
+                .setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW")
+                .setFirstName("Oleh")
+                .setLastName("Lyashko")
+                .setRoles(Set.of(customerRole));
 
-        User alice = new User()
-                .setId(1L)
-                .setEmail("alice@mail.com")
-                .setPassword("Alice1234")
-                .setFirstName("Alice")
-                .setLastName("Johnson")
-                .setDeleted(false)
-                .setRoles(Set.of(customer));
+        Role managerRole = new Role();
+        managerRole.setName(Role.RoleName.MANAGER);
 
-        User bob = new User()
-                .setId(3L)
-                .setEmail("bob@mail.com")
-                .setPassword("Bob12345")
-                .setFirstName("Bob")
-                .setLastName("Dickson")
-                .setDeleted(false)
-                .setRoles(Set.of(manager));
+        User admin = new User()
+                .setId(101L)
+                .setEmail("super_manager@gmail.com")
+                .setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW")
+                .setFirstName("Super")
+                .setLastName("Manager")
+                .setRoles(Set.of(managerRole));
 
         Map<String, User> users = Map.of(
-                john.getEmail(), john,
-                bob.getEmail(), bob,
-                alice.getEmail(), alice
+                oleh.getEmail(), oleh,
+                admin.getEmail(), admin
         );
         return users::get;
     }
