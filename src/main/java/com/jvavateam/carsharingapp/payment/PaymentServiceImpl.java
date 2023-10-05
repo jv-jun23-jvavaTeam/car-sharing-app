@@ -9,7 +9,6 @@ import com.jvavateam.carsharingapp.model.Payment;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.notification.NotificationService;
-import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.payment.calculator.PaymentCalculationsHandler;
 import com.jvavateam.carsharingapp.payment.calculator.TotalCalculator;
 import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
@@ -34,6 +33,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
+    private static final String SUCCESS_PAYMENT_MESSAGE = """
+            A new rental created!
+                        
+            📋 **Rental ID:** %d
+            🚗 **Car:** %s
+            📆 **Rental Date:** %s
+            🔙 **Expected Return Date:** %s
+            """;
     private static final String CURRENCY_NAME = "usd";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
@@ -44,7 +51,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final UserService userService;
     private final NotificationService notificationService;
-    private PaymentTotalCalculator calculator;
     private TotalCalculator calculator;
 
     @Value("${baseApiUrl}")
@@ -116,6 +122,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = getPaymentBySessionId(sessionId);
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
+
         Rental rental = payment.getRental();
         String message = getMessage(rental);
         List<User> managers = userService.findAllManagers();
@@ -151,8 +158,8 @@ public class PaymentServiceImpl implements PaymentService {
                         .build())
                 .setExpiresAt(EXPIRATION_TIME)
                 .setSuccessUrl(baseApiUrl
-                        + apiSuccessEndpoint
-                        + "?sessionId={CHECKOUT_SESSION_ID}")
+                               + apiSuccessEndpoint
+                               + "?sessionId={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(baseApiUrl + apiCancelEndpoint)
                 .build();
         Session session = null;
@@ -231,7 +238,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private String getMessage(Rental rental) {
         return String.format(
-                SUCCESSFUL_PAYMENT_MESSAGE,
+                SUCCESS_PAYMENT_MESSAGE,
                 rental.getId(),
                 rental.getCar().getModel() + " " + rental.getCar().getBrand(),
                 rental.getRentalDate(),

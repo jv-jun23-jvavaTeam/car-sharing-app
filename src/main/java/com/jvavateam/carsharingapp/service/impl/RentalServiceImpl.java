@@ -40,7 +40,6 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
-    private final UserService userService;
     private final NotificationService notificationService;
 
     @Override
@@ -49,6 +48,9 @@ public class RentalServiceImpl implements RentalService {
         decreaseCarInventory(createRentalByManagerDto.carId());
         Rental rental = rentalMapper.toModel(createRentalByManagerDto);
         Rental savedRental = rentalRepository.save(rental);
+
+        String message = getMessage(rental);
+        notificationService.sendMessage(savedRental.getUser(), message);
         return rentalMapper.toDto(savedRental);
     }
 
