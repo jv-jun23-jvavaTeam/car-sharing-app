@@ -12,7 +12,6 @@ services:
       SPRING_DATASOURCE_USERNAME: $MYSQL_USER
       SPRING_DATASOURCE_PASSWORD: $MYSQL_PASSWORD
       JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:$DEBUG_PORT
-      SPRING.LIQUIBASE.LABEL-FILTER: $GENERATE_DATA
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
       - $DEBUG_PORT
