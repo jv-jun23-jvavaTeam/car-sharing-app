@@ -9,7 +9,6 @@ import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
-import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.service.CarService;
