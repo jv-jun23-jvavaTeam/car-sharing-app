@@ -22,7 +22,6 @@
         <mysql.version>8.0.33</mysql.version>
         <openapi.version>2.1.0</openapi.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <stripe.version>23.0.0</stripe.version>
     </properties>
     <dependencies>
         <dependency>
@@ -49,12 +48,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-data</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
@@ -117,7 +110,6 @@
             <version>6.8.0</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
 

@@ -4,9 +4,9 @@ import com.jvavateam.carsharingapp.model.Car;
 import java.math.BigDecimal;
 
 public record CarDtoResponse(Long id,
-                             String model,
                              String brand,
-                             Car.Type type,
+                             String model,
                              int inventory,
-                             BigDecimal dailyFee) {
+                             BigDecimal dailyFee,
+                             Car.Type type) {
 }
