@@ -31,7 +31,6 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
-    private final UserService userService;
 
     @Override
     @Transactional
