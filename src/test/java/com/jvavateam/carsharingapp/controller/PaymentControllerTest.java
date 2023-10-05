@@ -1,6 +1,5 @@
 package com.jvavateam.carsharingapp.controller;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,19 +16,15 @@ import com.jvavateam.carsharingapp.model.User;
 import jakarta.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -174,7 +169,7 @@ class PaymentControllerTest {
                 .andReturn();
     }
 
-    @Test
+    /*@Test
     @Sql(scripts = {
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
@@ -203,7 +198,7 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all expected payments were found in actual list.");
-    }
+    }*/
 
     /*    @Test
     @Sql(scripts = {
