@@ -41,6 +41,12 @@ class PaymentControllerTest {
 
     private static final String INSERT_CUSTOMER_DATA =
             "classpath:database/user/add-sample-user-to-users-table.sql";
+    private static final String INSERT_MANAGER_DATA =
+            "classpath:database/connect_user_role/connect-sample-manager-role.sql";
+
+    private static final String INSERT_MANAGER_ROLES_DATA =
+            "classpath:database/user/add-manager-to-users-table.sql";
+
     private static final String INSERT_USER_ROLES_DATA =
             "classpath:database/connect_user_role/connect-sample-user-role.sql";
 
@@ -64,6 +70,10 @@ class PaymentControllerTest {
 
     private static final String DELETE_CAR_DATA =
             "classpath:database/car/remove-toyota-car-from-cars-table.sql";
+
+    private static final String DELETE_MANAGER_DATA =
+            "classpath:database/user/remove-manager-from-users-table.sql";
+
 
     private static final String DELETE_RENTALS_DATA =
             "classpath:database/rental/delete-all-rentals.sql";
@@ -258,14 +268,14 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
+    @Sql(scripts = {INSERT_MANAGER_DATA,INSERT_MANAGER_ROLES_DATA,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_MANAGER_DATA, DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify getting all of certain user's successful payments")
