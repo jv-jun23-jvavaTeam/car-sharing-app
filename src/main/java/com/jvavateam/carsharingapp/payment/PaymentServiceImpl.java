@@ -192,8 +192,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void existsPendingPayment(String type) {
         boolean check = paymentRepository.findAll().stream()
-                .anyMatch(p -> p.getStatus().equals(Payment.Status.PENDING)
-                        && p.getType().name().equals(type));
+                .anyMatch(payment -> payment.getStatus().equals(Payment.Status.PENDING)
+                        && payment.getType().name().equals(type));
         if (check) {
             throw new PaymentException(
                     "You have  unpaid payments! New payment can not be created!");
@@ -202,8 +202,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void existsPaymentForRental(Rental rental, Payment payment) {
         boolean check = paymentRepository.findAll().stream()
-                .anyMatch(p -> p.getType().equals(payment.getType())
-                        && p.getRental().equals(rental));
+                .anyMatch(p -> p.getRental().equals(rental)
+                        && p.getType().equals(payment.getType()));
         if (check) {
             throw new PaymentException(
                     "You have already payment with type " + payment.getType()
