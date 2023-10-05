@@ -43,8 +43,6 @@ class PaymentControllerTest {
             "classpath:database/user/add-sample-user-to-users-table.sql";
     private static final String INSERT_USER_ROLES_DATA =
             "classpath:database/connect_user_role/connect-sample-user-role.sql";
-    private static final String INSERT_MANAGER_ROLES_DATA =
-            "classpath:database/connect_user_role/connect-sample-manager-role.sql";
 
     private static final String INSERT_CAR_DATA =
             "classpath:database/car/add-toyota-car-to-cars-table.sql";
