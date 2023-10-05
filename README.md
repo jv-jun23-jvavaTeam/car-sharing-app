@@ -61,6 +61,38 @@ Our application offers the following functionalities:
 
 ## Getting started
 
+### Database Configuration
+
+
+1. **Database Configuration**:
+
+   Create a `.env` file in the root directory of your project to store sensitive database configuration details. Use the following template and replace the placeholder values with your own:
+
+   ```dotenv
+   MYSQL_ROOT_PASSWORD=SuperStrongPassword
+   # Database Configuration
+    # Database Configuration
+    MYSQL_ROOT_PASSWORD=SuperStrongPassword
+    MYSQL_USER=admin
+    MYSQL_PASSWORD=StrongPassword1234
+    MYSQL_DB=car_sharing_app
+    MYSQL_LOCAL_PORT=3307
+    MYSQL_DOCKER_PORT=3306
+    MYSQL_PING_CHECK=mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}
+    
+    # Spring Boot Configuration
+    SPRING_LOCAL_PORT=8088
+    SPRING_DOCKER_PORT=8080
+    DEBUG_PORT=5005
+    
+    # Telegram Bot Configuration
+    TELEGRAM_BOT_NAME=YourTelegramBotName
+    TELEGRAM_BOT_TOKEN=YourBotToken
+    
+    # Stripe Configuration
+    STRIPE_SECRET_KEY=YourStripeSecretWord
+
+
 To simplify deployment and management of this application, using Docker is recommended.\
 Docker allows you to build, package, and run this application in containers, making the deployment process straightforward and repeatable.
 
@@ -72,16 +104,16 @@ If Docker is not already installed on your computer, you can download it from th
 
 To deploy this application with Docker, follow these steps:
 
-1. Build the Docker image using the provided Dockerfile in the project's root directory:
+2. Build the Docker image using the provided Dockerfile in the project's root directory:
 
    ```bash
    docker compose build
 
-2. Run the container with the built image:
+3. Run the container with the built image:
     ```bash
     docker compose up
 
-3. Your application is now accessible at http://localhost:8088.
+4. Your application is now accessible at http://localhost:8088.
 
 Additional Docker Commands
 To view a list of active containers, use:\
