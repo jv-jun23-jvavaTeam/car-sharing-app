@@ -6,6 +6,8 @@ import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
 import com.jvavateam.carsharingapp.payment.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Payment management",
+        description = "Endpoints for managing payments")
 @RequiredArgsConstructor
 @RequestMapping("/payments")
 public class PaymentController {
