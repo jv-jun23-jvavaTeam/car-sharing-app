@@ -1,5 +1,5 @@
 INSERT INTO roles (id, name)
-VALUES (3, 'MANAGER');
+VALUES (1, 'MANAGER');
 INSERT INTO roles (id, name)
-VALUES (4, 'CUSTOMER');
+VALUES (2, 'CUSTOMER');
 

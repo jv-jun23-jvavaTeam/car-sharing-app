@@ -1,2 +1,2 @@
 INSERT INTO user_roles (user_id, role_id)
-VALUES (101, 4);
+VALUES (101, 1);
