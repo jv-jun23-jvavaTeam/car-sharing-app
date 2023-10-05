@@ -149,6 +149,12 @@ class PaymentControllerTest {
     }
 
     @Test
+    @Sql(scripts = {
+            INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = {
+            DELETE_CUSTOMER_DATA, DELETE_USER_ROLES_DATA
+    }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify creation of a new payment session")
     void createPayment_InvalidRequestDto_ThrowsException() throws Exception {
