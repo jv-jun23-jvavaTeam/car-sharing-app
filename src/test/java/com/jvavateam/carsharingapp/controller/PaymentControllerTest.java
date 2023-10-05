@@ -37,7 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
 class PaymentControllerTest {
     protected static MockMvc mockMvc;
     private static final String CUSTOMER = "wylo@ua.com";
-    private static final String MANAGER = "manager@gmail.com";
+    private static final String MANAGER = "super_manager@gmail.com";
 
     private static final String INSERT_ROLES =
             "classpath:database/role/insert-roles.sql";
@@ -213,6 +213,7 @@ class PaymentControllerTest {
     @Test
     @Sql(scripts = {
             DELETE_ROLES, INSERT_ROLES, INSERT_MANAGER_DATA,
+            INSERT_MANAGER_ROLES_DATA,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
@@ -222,7 +223,7 @@ class PaymentControllerTest {
             DELETE_USER_ROLES_DATA, DELETE_CAR_DATA,DELETE_MANAGER_DATA,
             DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @WithUserDetails("super_manager@gmail.com")
+    @WithUserDetails(MANAGER)
     @DisplayName("Verify getting all of certain user's payments")
     void getAllForCertainUser_ReturnsListOfPayments() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/payments/" + VALID_USER_CUSTOMER.getId())
