@@ -133,7 +133,7 @@ class PaymentServiceImplTest {
         verifyNoMoreInteractions(rentalRepository);
     }
 
-        /*    @Test
+    /*@Test
     @DisplayName("Verify update of Payment status")
     public void update_ExistingSessionId_ShouldChangeStatusOfPaymentToPaid() {
         when(paymentRepository.findBySessionId(VALID_SESSION_ID))
@@ -143,7 +143,7 @@ class PaymentServiceImplTest {
         Payment payment = PAYMENT_UNPAID;
         payment.setStatus(Payment.Status.PAID);
         verify(paymentRepository, times(1)).save(PAYMENT_UNPAID);
-    }   */
+    }*/
 
     @Test
     @DisplayName("Verify update of Payment status throws exception")
