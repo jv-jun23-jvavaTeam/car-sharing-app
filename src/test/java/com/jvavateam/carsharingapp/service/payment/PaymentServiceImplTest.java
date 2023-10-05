@@ -134,7 +134,7 @@ class PaymentServiceImplTest {
         verifyNoMoreInteractions(rentalRepository);
     }
 
-/*    @Test
+    /*    @Test
     @DisplayName("Verify update of Payment status")
     public void update_ExistingSessionId_ShouldChangeStatusOfPaymentToPaid() {
         when(paymentRepository.findBySessionId(VALID_SESSION_ID))
@@ -146,7 +146,7 @@ class PaymentServiceImplTest {
         verify(paymentRepository, times(1)).save(PAYMENT_UNPAID);
     }*/
 
-    @Test
+        @Test
     @DisplayName("Verify update of Payment status throws exception")
     public void update_NonExistingSessionId_ThrowsException() {
         when(paymentRepository.findBySessionId(INVALID_SESSION_ID)).thenReturn(Optional.empty());
