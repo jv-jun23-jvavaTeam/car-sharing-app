@@ -249,13 +249,13 @@ The project is organized as follows:
 
 ### Development Setup
 
-- Trello board for task management.
-- GitHub organization created.
+- [Trello](Trello) board for task management.
+- [GitHub organization](https://github.com/jv-jun23-jvavaTeam) created.
 - CI process configured.
 - Liquibase support added.
 - Health check controller implemented.
 - Docker and docker-compose support added.
-- Swagger documentation implemented.
+- [Swagger](http://localhost:8088/api/swagger-ui/index.html) documentation implemented.
 
 ### Challenges Faced
 
@@ -264,7 +264,7 @@ we gained valuable insights into collaborative teamwork.
 
 We successfully managed tight deadlines,
 emphasizing effective time management.\
-Our team utilized Trello as a powerful tool for task management,
+Our team utilized [Trello](Trello) as a powerful tool for task management,
 enabling seamless coordination and efficient project execution.\
 Additionally, we acquired new knowledge in handling online notifications and managing financial transactions.
 
