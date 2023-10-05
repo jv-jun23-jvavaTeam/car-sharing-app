@@ -17,8 +17,6 @@ import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
-import com.jvavateam.carsharingapp.repository.user.RoleRepository;
-import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +47,6 @@ public class RentalControllerTest {
     private static final LocalDate ACTUAL_RETURN_DATE = LocalDate.now();
     private static final Long CAR_ID = 100L;
     private static final Long USER_ID = 100L;
-    private static final Long MANAGER_ID = 101L;
     private static final Long RENTAL_ID = 100L;
     private static final Long SECOND_RENTAL_ID = 101L;
     private static final Car FOREIGN_KEY_CAR = new Car()
@@ -125,16 +122,15 @@ public class RentalControllerTest {
             );
 
     private static final String ADD_TOYOTA_CAR =
-            "classpath:database/car/add-100th-car-to-cars-table.sql";
-    private static final String ADD_100TH_USER =
-            "classpath:database/user/add-100th-user-to-users-table.sql";
-    private static final String ADD_101_MANAGER =
-            "classpath:database/user/add-101th-manager-to-users-table.sql";
-
-    private static final String ADD_100TH_RENTAL =
-            "classpath:database/rental/add-100th-rental-to-rentals-table.sql";
-    private static final String ADD_101TH_RENTAL =
-            "classpath:database/rental/add-101th-rental-to-rentals-table.sql";
+            "classpath:database/car/add-toyota-car-to-cars-table.sql";
+    private static final String ADD_USER =
+            "classpath:database/user/add-sample-user-to-users-table.sql";
+    private static final String ADD_MANAGER =
+            "classpath:database/user/add-manager-to-users-table.sql";
+    private static final String ADD_FIRST_RENTAL =
+            "classpath:database/rental/add-first-toyota-rental-to-rentals-table.sql";
+    private static final String ADD_SECOND_RENTAL =
+            "classpath:database/rental/add-second-rental-to-rentals-table.sql";
     private static final String CLEAR_RENTALS_TABLE =
             "classpath:database/rental/delete-all-rentals.sql";
     private static final String CLEAR_USERS_TABLE =
@@ -146,9 +142,9 @@ public class RentalControllerTest {
     private static final String INSERT_ROLES =
             "classpath:database/role/insert-roles.sql";
     private static final String CONNECT_USER_ROLE_TO_USER =
-            "classpath:database/connect_user_role/connect-100th-user-role.sql";;
+            "classpath:database/connect_user_role/connect-sample-user-role.sql";
     private static final String CONNECT_MANAGER_ROLE_TO_MANAGER =
-            "classpath:database/connect_user_role/connect-101th-manager-role.sql";
+            "classpath:database/connect_user_role/connect-sample-manager-role.sql";
     private static final String CLEAR_USER_ROLES =
             "classpath:database/connect_user_role/clear_user_roles_connection.sql";
 
@@ -163,13 +159,10 @@ public class RentalControllerTest {
                 .build();
     }
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Test
     @Sql(
             scripts = {
-                    ADD_100TH_USER,
+                    ADD_USER,
                     INSERT_ROLES,
                     CONNECT_USER_ROLE_TO_USER,
                     ADD_TOYOTA_CAR
@@ -197,7 +190,8 @@ public class RentalControllerTest {
                 .andReturn();
 
         RentalResponseDto actual =
-                objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalResponseDto.class);
+                objectMapper.readValue(mvcResult.getResponse()
+                        .getContentAsString(), RentalResponseDto.class);
 
         assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
     }
@@ -205,8 +199,8 @@ public class RentalControllerTest {
     @Test
     @Sql(
             scripts = {
-                    ADD_100TH_USER,
-                    ADD_101_MANAGER,
+                    ADD_USER,
+                    ADD_MANAGER,
                     INSERT_ROLES,
                     CONNECT_USER_ROLE_TO_USER,
                     CONNECT_MANAGER_ROLE_TO_MANAGER,
@@ -228,32 +222,31 @@ public class RentalControllerTest {
     @DisplayName("Creating rental by manager with valid dto. Ok Status and response DTO expected")
     void createByManager_withValidCreateDto_returnCreatedRentalDto() throws Exception {
         MvcResult mvcResult = mockMvc.perform(post("/rentals/manager")
-                        .content(objectMapper.writeValueAsString(REQUEST_CREATE_RENTAL_BY_MANAGER_DTO))
+                        .content(objectMapper
+                                .writeValueAsString(REQUEST_CREATE_RENTAL_BY_MANAGER_DTO))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated())
                 .andReturn();
 
         RentalResponseDto actual =
-                objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalResponseDto.class);
+                objectMapper.readValue(mvcResult.getResponse()
+                        .getContentAsString(), RentalResponseDto.class);
 
         assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
     }
-
-    @Autowired
-    RoleRepository roleRepository;
 
     @Test
     @Sql(
             scripts = {
                     ADD_TOYOTA_CAR,
                     INSERT_ROLES,
-                    ADD_101_MANAGER,
+                    ADD_MANAGER,
                     CONNECT_MANAGER_ROLE_TO_MANAGER,
-                    ADD_100TH_USER,
+                    ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
-                    ADD_100TH_RENTAL,
-                    ADD_101TH_RENTAL
+                    ADD_FIRST_RENTAL,
+                    ADD_SECOND_RENTAL
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -268,7 +261,8 @@ public class RentalControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(MANAGER_EMAIL)
-    @DisplayName("Getting rental list with valid search params. Ok Status and list response DTO expected")
+    @DisplayName("Getting rental list with valid search params. "
+            + "Ok Status and list response DTO expected")
     void getAllByManager_withValidSearchParams_returnListRentalDto() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/rentals/manager")
                         .content(objectMapper.writeValueAsString(SEARCH_PARAMS))
@@ -281,7 +275,8 @@ public class RentalControllerTest {
                 mvcResult.getResponse().getContentAsString(), RentalResponseDto[].class));
         boolean allExpectedRentalsFounded = REPOSITORY_RENTALS_DTO.stream()
                 .allMatch(expectedRentals -> actual.stream()
-                        .anyMatch(actualRentals -> expectedRentals.id().equals(actualRentals.id())));
+                        .anyMatch(actualRentals -> expectedRentals.id()
+                                .equals(actualRentals.id())));
         assertTrue(allExpectedRentalsFounded, "Not all expected books were found in actual list.");
     }
 
@@ -290,10 +285,10 @@ public class RentalControllerTest {
             scripts = {
                     INSERT_ROLES,
                     ADD_TOYOTA_CAR,
-                    ADD_100TH_USER,
+                    ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
-                    ADD_100TH_RENTAL,
-                    ADD_101TH_RENTAL
+                    ADD_FIRST_RENTAL,
+                    ADD_SECOND_RENTAL
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -308,7 +303,8 @@ public class RentalControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(OLEH_EMAIL)
-    @DisplayName("Getting rental list with authorized user. Ok Status and list response DTO expected")
+    @DisplayName("Getting rental list with authorized user."
+            + " Ok Status and list response DTO expected")
     void getAll_withAuthenticatedUser_returnListRentalDto() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/rentals")
                         .content(objectMapper.writeValueAsString(Pageable.ofSize(20)))
@@ -321,8 +317,10 @@ public class RentalControllerTest {
                 mvcResult.getResponse().getContentAsString(), RentalResponseDto[].class));
         boolean allExpectedRentalsFounded = REPOSITORY_RENTALS_DTO.stream()
                 .allMatch(expectedRentals -> actual.stream()
-                        .anyMatch(actualRentals -> expectedRentals.id().equals(actualRentals.id())));
-        assertTrue(allExpectedRentalsFounded, "Not all expected books were found in actual list.");
+                        .anyMatch(actualRentals ->
+                                expectedRentals.id().equals(actualRentals.id())));
+        assertTrue(allExpectedRentalsFounded,
+                "Not all expected books were found in actual list.");
     }
 
     @Test
@@ -330,10 +328,10 @@ public class RentalControllerTest {
             scripts = {
                     INSERT_ROLES,
                     ADD_TOYOTA_CAR,
-                    ADD_100TH_USER,
+                    ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
-                    ADD_100TH_RENTAL,
-                    ADD_101TH_RENTAL
+                    ADD_FIRST_RENTAL,
+                    ADD_SECOND_RENTAL
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -348,11 +346,14 @@ public class RentalControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(OLEH_EMAIL)
-    @DisplayName("Getting rental list with authorized user. Ok Status and list response DTO expected")
+    @DisplayName("Getting rental list with authorized user. "
+            + "Ok Status and list response DTO expected")
     void get_withAuthenticatedUser_returnRentalDto() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/rentals/" + RENTAL_ID)).andReturn();
+        MvcResult mvcResult = mockMvc.perform(
+                get("/rentals/" + RENTAL_ID)).andReturn();
         RentalResponseDto actual =
-                objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalResponseDto.class);
+                objectMapper.readValue(mvcResult.getResponse()
+                        .getContentAsString(), RentalResponseDto.class);
         assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
     }
 
@@ -361,10 +362,10 @@ public class RentalControllerTest {
             scripts = {
                     ADD_TOYOTA_CAR,
                     INSERT_ROLES,
-                    ADD_100TH_USER,
+                    ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
-                    ADD_100TH_RENTAL,
-                    ADD_101TH_RENTAL
+                    ADD_FIRST_RENTAL,
+                    ADD_SECOND_RENTAL
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -379,11 +380,14 @@ public class RentalControllerTest {
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(OLEH_EMAIL)
-    @DisplayName("Completing rental with authorized user. Ok Status and response return DTO expected")
+    @DisplayName("Completing rental with authorized user. "
+            + "Ok Status and response return DTO expected")
     void updateReturnDate_withAuthenticatedUser_returnListRentalDto() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(post("/rentals/" + RENTAL_ID + "/return")).andReturn();
+        MvcResult mvcResult = mockMvc.perform(post("/rentals/" + RENTAL_ID + "/return"))
+                .andReturn();
         RentalReturnResponseDto actual =
-                objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalReturnResponseDto.class);
+                objectMapper.readValue(mvcResult.getResponse()
+                        .getContentAsString(), RentalReturnResponseDto.class);
         assertTrue(EqualsBuilder.reflectionEquals(RENTAL_RETURN_RESPONSE_DTO, actual, "id"));
         assertFalse(actual.isActive());
     }

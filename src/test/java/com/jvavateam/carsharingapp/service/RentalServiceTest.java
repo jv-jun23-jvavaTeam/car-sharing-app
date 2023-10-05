@@ -2,8 +2,6 @@ package com.jvavateam.carsharingapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
@@ -132,18 +130,19 @@ class RentalServiceTest {
     private static final Pageable DEFAULT_PAGEABLE = Pageable.ofSize(20);
     private static final Page<Rental> REPOSITORY_PAGE =
             new PageImpl<>(REPOSITORY_RENTALS, DEFAULT_PAGEABLE, REPOSITORY_RENTALS.size());
-    private final Specification<Rental> SEARCH_SPECIFICATION = (root, query, criteriaBuilder) -> {
-        Long userId = SEARCH_PARAMS.userId();
-        boolean isActive = SEARCH_PARAMS.isActive();
-        List<Predicate> predicates = new ArrayList<>();
-        if (userId != null) {
-            predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
-        }
-        if (isActive) {
-            predicates.add(criteriaBuilder.isTrue(root.get("active")));
-        }
-        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    };
+    private static final Specification<Rental> SEARCH_SPECIFICATION =
+            (root, query, criteriaBuilder) -> {
+                Long userId = SEARCH_PARAMS.userId();
+                boolean isActive = SEARCH_PARAMS.isActive();
+                List<Predicate> predicates = new ArrayList<>();
+                if (userId != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
+                }
+                if (isActive) {
+                    predicates.add(criteriaBuilder.isTrue(root.get("active")));
+                }
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            };
 
     private static final Rental SAVED_RETURN_SECOND_RENTAL = new Rental()
             .setId(SECOND_RENTAL_ID)
@@ -153,12 +152,20 @@ class RentalServiceTest {
             .setCar(FOREIGN_KEY_CAR)
             .setUser(FOREIGN_KEY_USER)
             .setActive(false);
+    private static final User USER = new User()
+                .setId(100L)
+                .setEmail("wylo@ua.com")
+                .setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW")
+                .setFirstName("Oleh")
+                .setLastName("Lyashko");
     @Mock
     private RentalSpecificationBuilder rentalSpecificationBuilder;
     @Mock
     private RentalMapper rentalMapper;
     @Mock
     private CarService carService;
+    @Mock
+    private UserService userService;
     @Mock
     private RentalRepository rentalRepository;
     @InjectMocks
@@ -171,7 +178,7 @@ class RentalServiceTest {
         when(rentalRepository.save(CREATED_RENTAL)).thenReturn(CREATED_RENTAL);
         when(rentalMapper.toDto(CREATED_RENTAL)).thenReturn(RESPONSE_CREATED_RENTAL_DTO);
         when(carService.findById(CAR_ID)).thenReturn(CAR);
-
+        when(userService.getAuthentificatedUser()).thenReturn(USER);
         RentalResponseDto actual = rentalService.create(REQUEST_CREATE_RENTAL_DTO);
         assertEquals(RESPONSE_CREATED_RENTAL_DTO, actual);
     }
@@ -193,11 +200,13 @@ class RentalServiceTest {
     @DisplayName("Verify get all rentals for specific user by Manager")
     void getAllByManager_validSearchSpecification_shouldReturnRentalDtos() {
         when(rentalSpecificationBuilder.build(SEARCH_PARAMS)).thenReturn(SEARCH_SPECIFICATION);
-        when(rentalRepository.findAll(SEARCH_SPECIFICATION, DEFAULT_PAGEABLE)).thenReturn(REPOSITORY_PAGE);
+        when(rentalRepository.findAll(SEARCH_SPECIFICATION, DEFAULT_PAGEABLE))
+                .thenReturn(REPOSITORY_PAGE);
         when(rentalMapper.toDto(CREATED_RENTAL)).thenReturn(RESPONSE_CREATED_RENTAL_DTO);
         when(rentalMapper.toDto(SECOND_RENTAL)).thenReturn(SECOND_RENTAL_DTO);
 
-        List<RentalResponseDto> actual = rentalService.getAllByManager(SEARCH_PARAMS, DEFAULT_PAGEABLE);
+        List<RentalResponseDto> actual =
+                rentalService.getAllByManager(SEARCH_PARAMS, DEFAULT_PAGEABLE);
         assertEquals(REPOSITORY_RENTALS_DTO, actual);
     }
 
@@ -250,7 +259,6 @@ class RentalServiceTest {
 
         assertEquals("Car not found", exception.getMessage());
     }
-
 
     @Test
     @DisplayName("Verify complete rental with invalid ID throws EntityNotFoundException")

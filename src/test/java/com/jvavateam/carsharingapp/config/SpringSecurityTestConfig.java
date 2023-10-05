@@ -2,7 +2,6 @@ package com.jvavateam.carsharingapp.config;
 
 import com.jvavateam.carsharingapp.model.Role;
 import com.jvavateam.carsharingapp.model.User;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -27,25 +26,24 @@ public class SpringSecurityTestConfig {
         Role customerRole = new Role();
         customerRole.setName(Role.RoleName.CUSTOMER);
 
-        User oleh = new User();
-        oleh.setId(100L);
-        oleh.setEmail("wylo@ua.com");
-        oleh.setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW");
-        oleh.setFirstName("Oleh");
-        oleh.setLastName("Lyashko");
-        oleh.setRoles(Set.of(customerRole));
-
+        User oleh = new User()
+                .setId(100L)
+                .setEmail("wylo@ua.com")
+                .setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW")
+                .setFirstName("Oleh")
+                .setLastName("Lyashko")
+                .setRoles(Set.of(customerRole));
 
         Role managerRole = new Role();
         managerRole.setName(Role.RoleName.MANAGER);
 
-        User admin = new User();
-        admin.setId(101L);
-        admin.setEmail("super_manager@gmail.com");
-        admin.setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW");
-        admin.setFirstName("Super");
-        admin.setLastName("Manager");
-        admin.setRoles(Set.of(managerRole));
+        User admin = new User()
+                .setId(101L)
+                .setEmail("super_manager@gmail.com")
+                .setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW")
+                .setFirstName("Super")
+                .setLastName("Manager")
+                .setRoles(Set.of(managerRole));
 
         Map<String, User> users = Map.of(
                 oleh.getEmail(), oleh,

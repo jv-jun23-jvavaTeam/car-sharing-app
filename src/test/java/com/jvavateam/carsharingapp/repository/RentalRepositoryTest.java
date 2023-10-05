@@ -1,19 +1,15 @@
 package com.jvavateam.carsharingapp.repository;
 
-import static com.jvavateam.carsharingapp.model.Role.RoleName.CUSTOMER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.jvavateam.carsharingapp.config.SpringSecurityTestConfig;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
-import com.jvavateam.carsharingapp.model.Role;
 import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,35 +51,49 @@ public class RentalRepositoryTest {
             .setActive(true);
 
     private static final String ADD_TOYOTA_CAR =
-            "classpath:database/car/add-100th-car-to-cars-table.sql";
+            "classpath:database/car/add-toyota-car-to-cars-table.sql";
     private static final String ADD_USER =
-            "classpath:database/user/add-100th-user-to-users-table.sql";
-    private static final String ADD_RENTAL =
-            "classpath:database/rental/add-100th-rental-to-rentals-table.sql";
-    private static final String CLEAR_RENTAL_TABLE =
-            "classpath:database/rental/remove-101th-rental-from-rentals-table.sql.sql";
-    private static final String CLEAR_USER_TABLE =
-            "classpath:database/user/remove-100th-user-from-users-table.sql";
-    private static final String CLEAR_CAR_TABLE =
-            "classpath:database/car/remove-100th-car-from-cars-table.sql";
+            "classpath:database/user/add-sample-user-to-users-table.sql";
+    private static final String ADD_FIRST_RENTAL =
+            "classpath:database/rental/add-first-toyota-rental-to-rentals-table.sql";
+    private static final String ADD_SECOND_RENTAL =
+            "classpath:database/rental/add-second-rental-to-rentals-table.sql";
+    private static final String CLEAR_RENTALS_TABLE =
+            "classpath:database/rental/delete-all-rentals.sql";
+    private static final String CLEAR_USERS_TABLE =
+            "classpath:database/user/delete-all-users.sql";
+    private static final String CLEAR_CARS_TABLE =
+            "classpath:database/car/delete-all-cars.sql";
+    private static final String CLEAR_ROLES_TABLE =
+            "classpath:database/role/clear-roles-table.sql";
+    private static final String INSERT_ROLES =
+            "classpath:database/role/insert-roles.sql";
+    private static final String CONNECT_USER_ROLE_TO_USER =
+            "classpath:database/connect_user_role/connect-sample-user-role.sql";
+    private static final String CLEAR_USER_ROLES =
+            "classpath:database/connect_user_role/clear_user_roles_connection.sql";
 
     @Autowired
     private RentalRepository rentalRepository;
 
-
     @Test
     @Sql(
             scripts = {
+                    INSERT_ROLES,
                     ADD_TOYOTA_CAR,
                     ADD_USER,
-                    ADD_RENTAL
+                    CONNECT_USER_ROLE_TO_USER,
+                    ADD_FIRST_RENTAL,
+                    ADD_SECOND_RENTAL
             }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
             scripts = {
-                    CLEAR_RENTAL_TABLE,
-                    CLEAR_USER_TABLE,
-                    CLEAR_CAR_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(OLEH_EMAIL)
