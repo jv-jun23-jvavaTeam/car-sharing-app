@@ -16,9 +16,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findAllByStatus(Payment.Status status);
 
     @Query("""
-        FROM Payment p JOIN FETCH p.rental r
-        WHERE r.user.id = ?#{principal?.id}
-        """)
+            FROM Payment p JOIN FETCH p.rental r
+            WHERE r.user.id = ?#{principal?.id}
+            """)
     List<Payment> findAll();
 
     @EntityGraph(attributePaths = {"rental"})
