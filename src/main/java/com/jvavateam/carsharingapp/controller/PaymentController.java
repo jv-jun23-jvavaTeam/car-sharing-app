@@ -30,8 +30,7 @@ public class PaymentController {
     @Operation(summary = "Create new payment session",
             description = "Create new payment session")
     public PaymentResponseDto createPayment(@RequestBody CreatePaymentRequestDto requestDto) {
-        System.out.println("hello");
-        return paymentService.createPayment(requestDto);
+        return paymentService.create(requestDto);
     }
 
     @GetMapping

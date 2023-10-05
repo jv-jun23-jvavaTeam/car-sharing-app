@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentResponseDto createPayment(CreatePaymentRequestDto requestDto) {
+    public PaymentResponseDto create(CreatePaymentRequestDto requestDto) {
         Stripe.apiKey = stripeKey;
         existsPendingPayment();
 
