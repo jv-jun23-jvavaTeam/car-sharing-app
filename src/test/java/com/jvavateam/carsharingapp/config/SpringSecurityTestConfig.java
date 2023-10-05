@@ -30,7 +30,7 @@ public class SpringSecurityTestConfig {
         User oleh = new User();
         oleh.setId(100L);
         oleh.setEmail("wylo@ua.com");
-        oleh.setPassword("123456789");
+        oleh.setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW");
         oleh.setFirstName("Oleh");
         oleh.setLastName("Lyashko");
         oleh.setRoles(Set.of(customerRole));
@@ -42,7 +42,7 @@ public class SpringSecurityTestConfig {
         User admin = new User();
         admin.setId(101L);
         admin.setEmail("super_manager@gmail.com");
-        admin.setPassword("123456789");
+        admin.setPassword("$2a$12$2gWx8fCmINQ1EZ9cNrMG0.uNl7d63gmb/zTwj6yCdgsPXn5WD4tcW");
         admin.setFirstName("Super");
         admin.setLastName("Manager");
         admin.setRoles(Set.of(managerRole));

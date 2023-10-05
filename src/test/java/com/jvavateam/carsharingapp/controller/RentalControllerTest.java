@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import jakarta.servlet.DispatcherType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jvavateam.carsharingapp.config.SecurityConfig;
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
@@ -18,11 +17,9 @@ import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
+import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
-import jakarta.persistence.criteria.Predicate;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -32,11 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
@@ -51,23 +44,14 @@ public class RentalControllerTest {
     protected static MockMvc mockMvc;
     private static final String OLEH_EMAIL = "wylo@ua.com";
     private static final String MANAGER_EMAIL = "super_manager@gmail.com";
-    private static final LocalDate RENTAL_DATE = LocalDate.of(2024, 10, 4);
-    private static final LocalDate RETURN_DATE = LocalDate.of(2024, 10, 18);
-    private static final LocalDate ACTUAL_RETURN_DATE = LocalDate.of(2024, 10, 18);
+    private static final LocalDate RENTAL_DATE = LocalDate.of(2023, 11, 5);
+    private static final LocalDate RETURN_DATE = LocalDate.of(2023, 11, 20);
+    private static final LocalDate ACTUAL_RETURN_DATE = LocalDate.now();
     private static final Long CAR_ID = 100L;
     private static final Long USER_ID = 100L;
     private static final Long MANAGER_ID = 101L;
     private static final Long RENTAL_ID = 100L;
     private static final Long SECOND_RENTAL_ID = 101L;
-
-    private static final Car CAR = new Car()
-            .setId(1L)
-            .setModel("Toyota Camry")
-            .setBrand("Toyota")
-            .setInventory(11)
-            .setDailyFee(new BigDecimal("80.00"))
-            .setType(Car.Type.SEDAN)
-            .setDeleted(false);
     private static final Car FOREIGN_KEY_CAR = new Car()
             .setId(CAR_ID)
             .setDeleted(false);
@@ -86,7 +70,7 @@ public class RentalControllerTest {
                     RENTAL_DATE,
                     RETURN_DATE,
                     CAR_ID,
-                    MANAGER_ID
+                    USER_ID
             );
 
     private static final Rental TOYOTA_RENTAL = new Rental()
@@ -103,19 +87,6 @@ public class RentalControllerTest {
             .setCar(FOREIGN_KEY_CAR)
             .setUser(FOREIGN_KEY_USER)
             .setActive(true);
-    private static final List<Rental> REPOSITORY_RENTALS =
-            List.of(TOYOTA_RENTAL, SECOND_RENTAL);
-
-    private static final RentalReturnResponseDto RENTAL_RETURN_RESPONSE_DTO =
-            new RentalReturnResponseDto(
-                    TOYOTA_RENTAL.getId(),
-                    RENTAL_DATE,
-                    RETURN_DATE,
-                    ACTUAL_RETURN_DATE,
-                    CAR_ID,
-                    USER_ID,
-                    false
-            );
 
     private static final RentalResponseDto RESPONSE_CREATED_RENTAL_DTO = new RentalResponseDto(
             TOYOTA_RENTAL.getId(),
@@ -142,30 +113,17 @@ public class RentalControllerTest {
             true
     );
 
-    private static final Pageable DEFAULT_PAGEABLE = Pageable.ofSize(20);
-    private static final Page<Rental> REPOSITORY_PAGE =
-            new PageImpl<>(REPOSITORY_RENTALS, DEFAULT_PAGEABLE, REPOSITORY_RENTALS.size());
-    private final Specification<Rental> SEARCH_SPECIFICATION = (root, query, criteriaBuilder) -> {
-        Long userId = SEARCH_PARAMS.userId();
-        boolean isActive = SEARCH_PARAMS.isActive();
-        List<Predicate> predicates = new ArrayList<>();
-        if (userId != null) {
-            predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
-        }
-        if (isActive) {
-            predicates.add(criteriaBuilder.isTrue(root.get("active")));
-        }
-        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    };
+    private static final RentalReturnResponseDto RENTAL_RETURN_RESPONSE_DTO =
+            new RentalReturnResponseDto(
+                    TOYOTA_RENTAL.getId(),
+                    RENTAL_DATE,
+                    RETURN_DATE,
+                    ACTUAL_RETURN_DATE,
+                    CAR_ID,
+                    USER_ID,
+                    false
+            );
 
-    private static final Rental SAVED_RETURN_SECOND_RENTAL = new Rental()
-            .setId(SECOND_RENTAL_ID)
-            .setRentalDate(RENTAL_DATE)
-            .setReturnDate(RETURN_DATE)
-            .setActualReturnDate(LocalDate.now())
-            .setCar(FOREIGN_KEY_CAR)
-            .setUser(FOREIGN_KEY_USER)
-            .setActive(false);
     private static final String ADD_TOYOTA_CAR =
             "classpath:database/car/add-100th-car-to-cars-table.sql";
     private static final String ADD_100TH_USER =
@@ -177,16 +135,22 @@ public class RentalControllerTest {
             "classpath:database/rental/add-100th-rental-to-rentals-table.sql";
     private static final String ADD_101TH_RENTAL =
             "classpath:database/rental/add-101th-rental-to-rentals-table.sql";
-    private static final String REMOVE_100TH_RENTAL =
-            "classpath:database/rental/remove-101th-rental-from-rentals-table.sql";
-    private static final String REMOVE_101TH_RENTAL =
-            "classpath:database/rental/remove-101th-rental-from-rentals-table.sql";
-    private static final String REMOVE_100TH_USER_FROM_TABLE =
-            "classpath:database/user/remove-100th-user-from-users-table.sql";
-    private static final String REMOVE_101TH_MANAGER_FROM_TABLE =
-            "classpath:database/user/add-101th-manager-to-users-table.sql";
-    private static final String CLEAR_CAR_TABLE =
-            "classpath:database/car/remove-100th-car-from-cars-table.sql";
+    private static final String CLEAR_RENTALS_TABLE =
+            "classpath:database/rental/delete-all-rentals.sql";
+    private static final String CLEAR_USERS_TABLE =
+            "classpath:database/user/delete-all-users.sql";
+    private static final String CLEAR_CARS_TABLE =
+            "classpath:database/car/delete-all-cars.sql";
+    private static final String CLEAR_ROLES_TABLE =
+            "classpath:database/role/clear-roles-table.sql";
+    private static final String INSERT_ROLES =
+            "classpath:database/role/insert-roles.sql";
+    private static final String CONNECT_USER_ROLE_TO_USER =
+            "classpath:database/connect_user_role/connect-100th-user-role.sql";;
+    private static final String CONNECT_MANAGER_ROLE_TO_MANAGER =
+            "classpath:database/connect_user_role/connect-101th-manager-role.sql";
+    private static final String CLEAR_USER_ROLES =
+            "classpath:database/connect_user_role/clear_user_roles_connection.sql";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -206,15 +170,19 @@ public class RentalControllerTest {
     @Sql(
             scripts = {
                     ADD_100TH_USER,
+                    INSERT_ROLES,
+                    CONNECT_USER_ROLE_TO_USER,
                     ADD_TOYOTA_CAR
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
             scripts = {
-                    REMOVE_100TH_RENTAL,
-                    CLEAR_CAR_TABLE,
-                    REMOVE_100TH_USER_FROM_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
@@ -237,21 +205,27 @@ public class RentalControllerTest {
     @Test
     @Sql(
             scripts = {
+                    ADD_100TH_USER,
                     ADD_101_MANAGER,
+                    INSERT_ROLES,
+                    CONNECT_USER_ROLE_TO_USER,
+                    CONNECT_MANAGER_ROLE_TO_MANAGER,
                     ADD_TOYOTA_CAR
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
             scripts = {
-                    REMOVE_100TH_RENTAL,
-                    CLEAR_CAR_TABLE,
-                    REMOVE_101TH_MANAGER_FROM_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(MANAGER_EMAIL)
-    @DisplayName("Creating rental with valid dto. Ok Status and response DTO expected")
+    @DisplayName("Creating rental by manager with valid dto. Ok Status and response DTO expected")
     void createByManager_withValidCreateDto_returnCreatedRentalDto() throws Exception {
         MvcResult mvcResult = mockMvc.perform(post("/rentals/manager")
                         .content(objectMapper.writeValueAsString(REQUEST_CREATE_RENTAL_BY_MANAGER_DTO))
@@ -266,11 +240,18 @@ public class RentalControllerTest {
         assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
     }
 
+    @Autowired
+    RoleRepository roleRepository;
+
     @Test
     @Sql(
             scripts = {
                     ADD_TOYOTA_CAR,
+                    INSERT_ROLES,
+                    ADD_101_MANAGER,
+                    CONNECT_MANAGER_ROLE_TO_MANAGER,
                     ADD_100TH_USER,
+                    CONNECT_USER_ROLE_TO_USER,
                     ADD_100TH_RENTAL,
                     ADD_101TH_RENTAL
             },
@@ -278,21 +259,22 @@ public class RentalControllerTest {
     )
     @Sql(
             scripts = {
-                    REMOVE_100TH_RENTAL,
-                    REMOVE_101TH_RENTAL,
-                    CLEAR_CAR_TABLE,
-                    REMOVE_101TH_MANAGER_FROM_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(MANAGER_EMAIL)
     @DisplayName("Getting rental list with valid search params. Ok Status and list response DTO expected")
     void getAllByManager_withValidSearchParams_returnListRentalDto() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/rentals")
+        MvcResult mvcResult = mockMvc.perform(get("/rentals/manager")
                         .content(objectMapper.writeValueAsString(SEARCH_PARAMS))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
 
         List<RentalResponseDto> actual = Arrays.asList(objectMapper.readValue(
@@ -306,8 +288,10 @@ public class RentalControllerTest {
     @Test
     @Sql(
             scripts = {
+                    INSERT_ROLES,
                     ADD_TOYOTA_CAR,
                     ADD_100TH_USER,
+                    CONNECT_USER_ROLE_TO_USER,
                     ADD_100TH_RENTAL,
                     ADD_101TH_RENTAL
             },
@@ -315,10 +299,11 @@ public class RentalControllerTest {
     )
     @Sql(
             scripts = {
-                    REMOVE_100TH_RENTAL,
-                    REMOVE_101TH_RENTAL,
-                    CLEAR_CAR_TABLE,
-                    REMOVE_101TH_MANAGER_FROM_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
@@ -329,7 +314,7 @@ public class RentalControllerTest {
                         .content(objectMapper.writeValueAsString(Pageable.ofSize(20)))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
 
         List<RentalResponseDto> actual = Arrays.asList(objectMapper.readValue(
@@ -343,8 +328,10 @@ public class RentalControllerTest {
     @Test
     @Sql(
             scripts = {
+                    INSERT_ROLES,
                     ADD_TOYOTA_CAR,
                     ADD_100TH_USER,
+                    CONNECT_USER_ROLE_TO_USER,
                     ADD_100TH_RENTAL,
                     ADD_101TH_RENTAL
             },
@@ -352,10 +339,11 @@ public class RentalControllerTest {
     )
     @Sql(
             scripts = {
-                    REMOVE_100TH_RENTAL,
-                    REMOVE_101TH_RENTAL,
-                    CLEAR_CAR_TABLE,
-                    REMOVE_101TH_MANAGER_FROM_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
@@ -367,11 +355,14 @@ public class RentalControllerTest {
                 objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalResponseDto.class);
         assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
     }
+
     @Test
     @Sql(
             scripts = {
                     ADD_TOYOTA_CAR,
+                    INSERT_ROLES,
                     ADD_100TH_USER,
+                    CONNECT_USER_ROLE_TO_USER,
                     ADD_100TH_RENTAL,
                     ADD_101TH_RENTAL
             },
@@ -379,20 +370,21 @@ public class RentalControllerTest {
     )
     @Sql(
             scripts = {
-                    REMOVE_100TH_RENTAL,
-                    REMOVE_101TH_RENTAL,
-                    CLEAR_CAR_TABLE,
-                    REMOVE_101TH_MANAGER_FROM_TABLE
+                    CLEAR_RENTALS_TABLE,
+                    CLEAR_USER_ROLES,
+                    CLEAR_CARS_TABLE,
+                    CLEAR_USERS_TABLE,
+                    CLEAR_ROLES_TABLE,
             },
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(OLEH_EMAIL)
     @DisplayName("Completing rental with authorized user. Ok Status and response return DTO expected")
     void updateReturnDate_withAuthenticatedUser_returnListRentalDto() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(post("/" + RENTAL_ID + "/return")).andReturn();
+        MvcResult mvcResult = mockMvc.perform(post("/rentals/" + RENTAL_ID + "/return")).andReturn();
         RentalReturnResponseDto actual =
                 objectMapper.readValue(mvcResult.getResponse().getContentAsString(), RentalReturnResponseDto.class);
-        assertTrue(EqualsBuilder.reflectionEquals(RESPONSE_CREATED_RENTAL_DTO, actual, "id"));
+        assertTrue(EqualsBuilder.reflectionEquals(RENTAL_RETURN_RESPONSE_DTO, actual, "id"));
         assertFalse(actual.isActive());
     }
 }
