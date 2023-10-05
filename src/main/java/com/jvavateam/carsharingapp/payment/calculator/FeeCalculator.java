@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.payment.calculator;
 
+import com.jvavateam.carsharingapp.exception.PaymentException;
 import com.jvavateam.carsharingapp.model.Payment;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
@@ -9,6 +10,10 @@ public class FeeCalculator implements TotalCalculator {
 
     @Override
     public Long calculateTotal(Payment payment) {
+        if (payment.getRental().getActualReturnDate() == null) {
+            throw new PaymentException("The actual return date is null! Can't calculate fee!");
+        }
+
         long overdueDays = ChronoUnit.DAYS.between(payment.getRental().getReturnDate(),
                 payment.getRental().getActualReturnDate());
         BigDecimal total = payment.getRental().getCar().getDailyFee()
