@@ -23,7 +23,7 @@ databaseChangeLog:
                   value: 80.00
               - column:
                   name: type
-                  value: 'Sedan'
+                  value: 'SEDAN'
               - column:
                   name: is_deleted
                   valueBoolean: false

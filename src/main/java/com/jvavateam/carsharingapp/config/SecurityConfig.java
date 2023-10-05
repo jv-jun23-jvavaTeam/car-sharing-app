@@ -26,6 +26,8 @@ public class SecurityConfig {
     private static final String AUTHENTICATION_ENDPOINT = "/auth/**";
     private static final String SWAGGER_UI_ENDPOINT = "/swagger-ui/**";
     private static final String SWAGGER_API_ENDPOINT = "/v3/api-docs/**";
+    private static final String SUCCESS_PAYMENT_ENDPOINT = "/payments/success/**";
+    private static final String CANCEL_PAYMENT_ENDPOINT = "/payments/cancel";
     private static final String HEALTH_CHECK_ENDPOINT = "/health/**";
 
     private final UserDetailsService userDetailsService;
@@ -45,7 +47,9 @@ public class SecurityConfig {
                                 .requestMatchers(AUTHENTICATION_ENDPOINT,
                                         SWAGGER_UI_ENDPOINT,
                                         SWAGGER_API_ENDPOINT,
-                                        HEALTH_CHECK_ENDPOINT)
+                                        HEALTH_CHECK_ENDPOINT,
+                                        SUCCESS_PAYMENT_ENDPOINT,
+                                        CANCEL_PAYMENT_ENDPOINT)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

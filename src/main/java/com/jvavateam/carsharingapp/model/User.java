@@ -32,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NamedEntityGraph(name = "User.roles",
         attributeNodes = @NamedAttributeNode("roles")
 )
+@Accessors(chain = true)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

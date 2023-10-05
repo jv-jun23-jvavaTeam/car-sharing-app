@@ -25,6 +25,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String UNKNOWN_ERROR_MESSAGE =
             "Server throws unknown exception ";
+
+    private static final String PAYMENT_ERROR_MESSAGE =
+            "An error occured while proceeding payment: ";
+
     private static final String ENTITY_NOT_FOUND_MESSAGE =
             "An error occurred while proceeding data from database. "
                     + "Nothing found by provided parameters: ";
@@ -41,7 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String DATA_INTEGRITY_VIOLATION_MESSAGE =
             "An error occurred while processing the request. "
             + "You are attempting to add data "
-            + "that violates a unique constraint in the database: ";
+            + "that violates a constraint in the database: ";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -139,6 +143,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         + ex.getMessage(),
                         HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({PaymentException.class})
+    protected ResponseEntity<ErrorResponseDto> handlePaymentException(
+            PaymentException ex
+    ) {
+        ErrorResponseDto errorResponse =
+                getErrorMessageBody(PAYMENT_ERROR_MESSAGE
+                                + ex.getMessage(),
+                        HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+  
+    @ExceptionHandler(TelegramBotException.class)
+    public void handleTelegramBotException(TelegramBotException e) {
+        logger.error("Telegram bot exception occurred", e);
     }
 
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
