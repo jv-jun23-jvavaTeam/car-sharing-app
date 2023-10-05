@@ -13,13 +13,15 @@ services:
       SPRING_DATASOURCE_USERNAME: $MYSQL_USER
       SPRING_DATASOURCE_PASSWORD: $MYSQL_PASSWORD
       JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:$DEBUG_PORT
+      telegram.bot.name: ${TELEGRAM_BOT_NAME}
+      telegram.bot.token: ${TELEGRAM_BOT_TOKEN}
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
       - $DEBUG_PORT
 
   mysqlserver:
     image: mysql
-    restart: on-failure
+    restart: always
     env_file: ./.env
     ports:
       - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
