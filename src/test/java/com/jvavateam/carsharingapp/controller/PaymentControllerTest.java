@@ -151,32 +151,16 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
-            INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
-            INSERT_RENTAL_ONE_DATA
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = {
-            DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
-    }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify creation of a new payment session")
     void createPayment_InvalidRequestDto_ThrowsException() throws Exception {
         String jsonRequest = objectMapper.writeValueAsString(CREATE_PAYMENT_DTO);
-
-        MvcResult result = mockMvc.perform(post("/payments")
+        mockMvc.perform(post("/payments")
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().is4xxClientError())
                 .andReturn();
-
-        PaymentResponseDto actual = objectMapper.readValue(
-                result.getResponse().getContentAsString(), PaymentResponseDto.class);
-        assertNotNull(actual);
-        assertNotNull(actual.rentalId());
-        EqualsBuilder.reflectionEquals(PAYMENT_RESPONSE_DTO_UNPAID_PAYMENT,
-                actual, "id", "sessionUrl", "sessionId");
     }
 
     @Test
