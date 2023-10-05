@@ -30,7 +30,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: session_url
-                  type: varchar(255)
+                  type: varchar(500)
                   constraints:
                     nullable: false
                     unique: true
@@ -45,7 +45,6 @@ databaseChangeLog:
                   type: decimal(10, 2)
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: is_deleted
                   type: boolean

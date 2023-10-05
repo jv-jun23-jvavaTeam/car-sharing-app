@@ -46,8 +46,7 @@ public class RentalServiceImpl implements RentalService {
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
-        User currentUser = userService.getAuthentificatedUser();
-        rental.setUser(currentUser);
+        rental.setUser(userService.getAuthentificatedUser());
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toDto(savedRental);
     }
