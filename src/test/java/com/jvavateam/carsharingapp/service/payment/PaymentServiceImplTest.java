@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -134,7 +133,7 @@ class PaymentServiceImplTest {
         verifyNoMoreInteractions(rentalRepository);
     }
 
-    /*    @Test
+        /*    @Test
     @DisplayName("Verify update of Payment status")
     public void update_ExistingSessionId_ShouldChangeStatusOfPaymentToPaid() {
         when(paymentRepository.findBySessionId(VALID_SESSION_ID))
@@ -144,9 +143,9 @@ class PaymentServiceImplTest {
         Payment payment = PAYMENT_UNPAID;
         payment.setStatus(Payment.Status.PAID);
         verify(paymentRepository, times(1)).save(PAYMENT_UNPAID);
-    }*/
+    }   */
 
-        @Test
+    @Test
     @DisplayName("Verify update of Payment status throws exception")
     public void update_NonExistingSessionId_ThrowsException() {
         when(paymentRepository.findBySessionId(INVALID_SESSION_ID)).thenReturn(Optional.empty());
