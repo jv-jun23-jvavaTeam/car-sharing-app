@@ -64,7 +64,7 @@ Our application offers the following functionalities:
 ### Database Configuration
 
 
-1. **Database Configuration**:
+* **Database Configuration**:
 
    Create a `.env` file in the root directory of your project to store sensitive database configuration details. Use the following template and replace the placeholder values with your own:
 
@@ -104,16 +104,16 @@ If Docker is not already installed on your computer, you can download it from th
 
 To deploy this application with Docker, follow these steps:
 
-2. Build the Docker image using the provided Dockerfile in the project's root directory:
+1. Build the Docker image using the provided Dockerfile in the project's root directory:
 
    ```bash
    docker compose build
 
-3. Run the container with the built image:
+2. Run the container with the built image:
     ```bash
     docker compose up
 
-4. Your application is now accessible at http://localhost:8088.
+3. Your application is now accessible at http://localhost:8088.
 
 Additional Docker Commands
 To view a list of active containers, use:\
