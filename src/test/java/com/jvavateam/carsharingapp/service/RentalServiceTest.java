@@ -2,6 +2,8 @@ package com.jvavateam.carsharingapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import com.jvavateam.carsharingapp.dto.rental.CreateRentalByManagerDto;
@@ -14,6 +16,7 @@ import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.User;
+import com.jvavateam.carsharingapp.notification.NotificationService;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.service.impl.RentalServiceImpl;
@@ -28,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -168,6 +172,8 @@ class RentalServiceTest {
     private UserService userService;
     @Mock
     private RentalRepository rentalRepository;
+    @Mock
+    private NotificationService notificationService;
     @InjectMocks
     private RentalServiceImpl rentalService;
 
@@ -180,6 +186,8 @@ class RentalServiceTest {
         when(carService.findById(CAR_ID)).thenReturn(CAR);
         when(userService.getAuthentificatedUser()).thenReturn(USER);
         RentalResponseDto actual = rentalService.create(REQUEST_CREATE_RENTAL_DTO);
+        Mockito.verify(notificationService, times(1)).notifyAll(any(),any());
+        Mockito.verify(notificationService, times(1)).sendMessage(any(),any());
         assertEquals(RESPONSE_CREATED_RENTAL_DTO, actual);
     }
 

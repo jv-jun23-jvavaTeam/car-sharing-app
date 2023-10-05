@@ -11,6 +11,7 @@ import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.UserService;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,5 +63,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getAuthentificatedUser() {
         return userRepository.getCurrentUser();
+    }
+
+    @Override
+    public List<User> findAllManagers() {
+        Role role = roleRepository.getRoleByName(Role.RoleName.MANAGER);
+        return userRepository.findAllByRolesContains(role);
     }
 }

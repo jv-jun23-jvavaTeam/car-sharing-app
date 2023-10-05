@@ -30,8 +30,6 @@ public class TelegramNotificationService implements NotificationService {
         return subscriptionRepository.findAllById(userIds)
                 .stream()
                 .peek(subscription -> bot.sendMessage(subscription.getChatId(), message))
-                .map(obj -> true)
-                .findFirst()
-                .orElse(false);
+                .count() > 0;
     }
 }
