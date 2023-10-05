@@ -34,8 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
 @Import(SecurityConfig.class)
 public class CarControllerTest {
     protected static MockMvc mockMvc;
-    private static final String USER_EMAIL = "userEmail@gmail.com";
-    private static final String MANAGER_EMAIL = "managerEmail@gmail.com";
+    private static final String USER_EMAIL = "wylo@ua.com";
+    private static final String MANAGER_EMAIL = "super_manager@gmail.com";
     private static final Long TOYOTA_CAR_ID = 100L;
     private static final String TOYOTA_BRAND = "Toyota";
     private static final String TOYOTA_MODEL = "Toyota Camry";
