@@ -68,7 +68,6 @@ Our application offers the following functionalities:
 
    ```dotenv
    MYSQL_ROOT_PASSWORD=SuperStrongPassword
-   # Database Configuration
     # Database Configuration
     MYSQL_ROOT_PASSWORD=SuperStrongPassword
     MYSQL_USER=admin
