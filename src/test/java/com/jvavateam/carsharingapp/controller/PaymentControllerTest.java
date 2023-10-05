@@ -216,7 +216,7 @@ class PaymentControllerTest {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
             DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @WithUserDetails(MANAGER)
+    @WithUserDetails("super_manager@gmail.com")
     @DisplayName("Verify getting all of certain user's payments")
     void getAllForCertainUser_ReturnsListOfPayments() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/payments/" + VALID_USER_CUSTOMER.getId())
@@ -248,7 +248,7 @@ class PaymentControllerTest {
             DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
-    @DisplayName("Verify getting all of certain user's successful payments")
+    @DisplayName("Verify getting all of current user's successful payments")
     void getAllSuccessfulPayments_ReturnsListOfPayments() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/payments/successful")
                         .content(objectMapper.writeValueAsString(Pageable.ofSize(20)))
@@ -278,7 +278,7 @@ class PaymentControllerTest {
             DELETE_MANAGER_DATA, DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
-    @DisplayName("Verify getting all of certain user's successful payments")
+    @DisplayName("Verify getting all of current user's successful payments")
     void getAllPausedPayments_ReturnsListOfPayments() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/payments/paused")
                         .content(objectMapper.writeValueAsString(Pageable.ofSize(20)))
