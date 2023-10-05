@@ -38,7 +38,9 @@ public class UserServiceImpl implements UserService {
         User userForRoleUpdating = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User with such ID doesn't exists"));
         Role roleToUpdate = roleRepository.getRoleByName(Role.RoleName.valueOf(role.status()));
-        userForRoleUpdating.setRoles(Set.of(roleToUpdate));
+        HashSet<Role> roles = new HashSet<>();
+        roles.add(roleToUpdate);
+        userForRoleUpdating.setRoles(roles);
         userRepository.save(userForRoleUpdating);
     }
 
