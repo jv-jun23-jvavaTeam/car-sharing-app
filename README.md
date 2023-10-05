@@ -67,7 +67,7 @@ Our application offers the following functionalities:
    Create a `.env` file in the root directory of your project to store sensitive database configuration details. Use the following template and replace the placeholder values with your own:
 
    ```dotenv
-   MYSQL_ROOT_PASSWORD=SuperStrongPassword
+    MYSQL_ROOT_PASSWORD=SuperStrongPassword
     # Database Configuration
     MYSQL_ROOT_PASSWORD=SuperStrongPassword
     MYSQL_USER=admin
