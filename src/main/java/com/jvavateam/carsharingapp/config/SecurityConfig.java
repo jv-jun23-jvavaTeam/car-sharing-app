@@ -2,7 +2,7 @@ package com.jvavateam.carsharingapp.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import com.jvavateam.carsharingapp.security.JwtAuthentificationFilter;
+import com.jvavateam.carsharingapp.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ public class SecurityConfig {
     private static final String HEALTH_CHECK_ENDPOINT = "/health/**";
 
     private final UserDetailsService userDetailsService;
-    private final JwtAuthentificationFilter jwtAuthentificationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .httpBasic(withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthentificationFilter,
+                .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .build();

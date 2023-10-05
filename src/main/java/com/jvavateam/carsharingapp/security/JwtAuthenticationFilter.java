@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthentificationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final int BEGINNING_OF_TOKEN = 7;
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_OF_TOKEN = "Bearer ";

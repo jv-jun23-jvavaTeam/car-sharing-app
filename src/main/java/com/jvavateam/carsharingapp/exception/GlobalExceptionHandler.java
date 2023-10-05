@@ -64,15 +64,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, headers, status);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    protected ResponseEntity<Object> handleAllErrors(Exception exception) {
-        logger.error("Internal server error: ", exception);
-        ErrorResponseDto response =
-                getErrorMessageBody(UNKNOWN_ERROR_MESSAGE,
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleUniqueDataDuplicate(
             DataIntegrityViolationException ex) {
@@ -145,7 +136,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({PaymentException.class})
+    @ExceptionHandler(PaymentException.class)
     protected ResponseEntity<ErrorResponseDto> handlePaymentException(
             PaymentException ex
     ) {
@@ -155,10 +146,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-  
-    @ExceptionHandler(TelegramBotException.class)
-    public void handleTelegramBotException(TelegramBotException e) {
-        logger.error("Telegram bot exception occurred", e);
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<Object> handleAllErrors(Exception exception) {
+        logger.error("Internal server error: ", exception);
+        ErrorResponseDto response =
+                getErrorMessageBody(UNKNOWN_ERROR_MESSAGE,
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
