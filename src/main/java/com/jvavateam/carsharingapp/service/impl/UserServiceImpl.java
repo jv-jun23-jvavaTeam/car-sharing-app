@@ -12,6 +12,7 @@ import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.UserService;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,9 +38,7 @@ public class UserServiceImpl implements UserService {
         User userForRoleUpdating = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User with such ID doesn't exists"));
         Role roleToUpdate = roleRepository.getRoleByName(Role.RoleName.valueOf(role.status()));
-        HashSet<Role> roles = new HashSet<>();
-        roles.add(roleToUpdate);
-        userForRoleUpdating.setRoles(roles);
+        userForRoleUpdating.setRoles(Set.of(roleToUpdate));
         userRepository.save(userForRoleUpdating);
     }
 
@@ -69,5 +68,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getAuthentificatedUser() {
         return userRepository.getCurrentUser();
+    }
+
+    @Override
+    public List<User> findAllManagers() {
+        Role role = roleRepository.getRoleByName(Role.RoleName.MANAGER);
+        return userRepository.findAllByRolesContains(role);
     }
 }

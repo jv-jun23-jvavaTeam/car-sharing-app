@@ -1,17 +1,22 @@
 package com.jvavateam.carsharingapp.notification.telegram;
 
-import com.jvavateam.carsharingapp.exception.TelegramBotException;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Component
 public class TelegramBotService extends TelegramLongPollingBot {
+    private static final Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
     private final TelegramHandlerManager handlerManager;
     private final String botUserName;
 
@@ -39,6 +44,16 @@ public class TelegramBotService extends TelegramLongPollingBot {
         return botUserName;
     }
 
+    @PostConstruct
+    public void init() {
+        try {
+            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+            telegramBotsApi.registerBot(this);
+        } catch (TelegramApiException e) {
+            logger.error("Telegram bot API registration failed", e);
+        }
+    }
+
     public void sendMessage(Long chatId, String message) {
         sendMessage(
                 SendMessage.builder()
@@ -52,11 +67,10 @@ public class TelegramBotService extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            throw new TelegramBotException(
+            logger.error(
                     "Can't send message to chatId "
-                            + sendMessage.getChatId(),
-                    e
-            );
+                    + sendMessage.getChatId(),
+                    e);
         }
     }
 }
