@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-subscriptions-table
+      author: Dmytro Martyshchuk
+      changes:
+        - createTable:
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_users_shopping_cart
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
