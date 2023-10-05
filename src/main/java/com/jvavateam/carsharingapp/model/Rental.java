@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -21,6 +22,7 @@ import org.hibernate.annotations.Where;
 @SQLDelete(sql = "UPDATE rental SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted=false")
 @Table(name = "rentals")
+@Accessors(chain = true)
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +31,7 @@ public class Rental {
     private LocalDate rentalDate;
     @Column(name = "return_date", nullable = false)
     private LocalDate returnDate;
-    @Column(name = "actual_return_date", nullable = false)
+    @Column(name = "actual_return_date")
     private LocalDate actualReturnDate;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "car_id", nullable = false)

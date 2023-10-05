@@ -36,6 +36,7 @@ public class RentalServiceImpl implements RentalService {
             🔙 **Expected Return Date:** %s
             """;
     private final CarService carService;
+    private final UserService userService;
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
@@ -56,6 +57,7 @@ public class RentalServiceImpl implements RentalService {
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
+        rental.setUser(userService.getAuthentificatedUser());
         Rental savedRental = rentalRepository.save(rental);
 
         String message = getMessage(rental);
