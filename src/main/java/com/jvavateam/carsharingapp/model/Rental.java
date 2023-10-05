@@ -13,12 +13,14 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Data
 @Entity
 @SQLDelete(sql = "UPDATE rental SET is_deleted = true WHERE id = ?")
+@Accessors(chain = true)
 @Where(clause = "is_deleted=false")
 @Table(name = "rentals")
 public class Rental {

@@ -15,12 +15,14 @@ import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
 @Data
 @SQLDelete(sql = "UPDATE payments SET is_deleted = true WHERE id = ?")
+@Accessors(chain = true)
 @Where(clause = "is_deleted = false")
 @Table(name = "payments")
 public class Payment {
