@@ -115,7 +115,7 @@ Login after registration:\
 </span>
 
 
-Set to jwt token to your environment and "Save":
+Set jwt token to your environment and click "Save":
 
 <span style="display: inline-block; border: 5px solid #38ca75; border-radius: 25px; padding: 7px;">
 <img src="paintings/jwt-example.png" alt="CarRental" style="border-radius: 10px; width: 800px">
