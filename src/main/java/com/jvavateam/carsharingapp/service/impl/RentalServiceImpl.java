@@ -9,10 +9,13 @@ import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
+import com.jvavateam.carsharingapp.model.User;
+import com.jvavateam.carsharingapp.notification.NotificationService;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.service.CarService;
 import com.jvavateam.carsharingapp.service.RentalService;
+import com.jvavateam.carsharingapp.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +27,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
+    private static final String RENTAL_INFO_TEMPLATE = """
+            A new rental created!
+                        
+            📋 **Rental ID:** %d
+            🚗 **Car:** %s
+            📆 **Rental Date:** %s
+            🔙 **Expected Return Date:** %s
+            """;
     private final CarService carService;
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final RentalSpecificationBuilder rentalSpecificationBuilder;
+    private final UserService userService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -44,6 +57,11 @@ public class RentalServiceImpl implements RentalService {
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
         Rental savedRental = rentalRepository.save(rental);
+
+        String message = getMessage(rental);
+        List<User> managers = userService.findAllManagers();
+        notificationService.sendMessage(savedRental.getUser(), message);
+        notificationService.notifyAll(managers, message);
         return rentalMapper.toDto(savedRental);
     }
 
@@ -53,7 +71,6 @@ public class RentalServiceImpl implements RentalService {
                                                    Pageable pageable) {
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
-
         return rentalRepository.findAll(searchSpecification, pageable).stream()
                 .map(rentalMapper::toDto)
                 .toList();
@@ -102,5 +119,15 @@ public class RentalServiceImpl implements RentalService {
         Car carForDecreasing = carService.findById(decreasingCarId);
         carForDecreasing.setInventory(carForDecreasing.getInventory() - 1);
         carService.update(carForDecreasing);
+    }
+
+    private String getMessage(Rental rental) {
+        return String.format(
+                RENTAL_INFO_TEMPLATE,
+                rental.getId(),
+                rental.getCar().getModel() + " " + rental.getCar().getBrand(),
+                rental.getRentalDate(),
+                rental.getReturnDate()
+        );
     }
 }

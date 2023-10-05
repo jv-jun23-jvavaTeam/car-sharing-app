@@ -45,7 +45,8 @@ public class ScheduledNotification {
     private final UserService userService;
     private final NotificationService notificationService;
 
-    @Scheduled(cron = "0 0 16 * * *")
+    //@Scheduled(cron = "0 0 16 * * *")
+    @Scheduled(fixedRate = 50000)
     public void notifyUsersWithOutDateRentals() {
         List<User> managers = userService.findAllManagers();
         List<Rental> rentals = rentalService.getAllOverdueRentals();
