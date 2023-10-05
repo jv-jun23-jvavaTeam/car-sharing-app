@@ -74,7 +74,6 @@ class PaymentControllerTest {
     private static final String DELETE_MANAGER_DATA =
             "classpath:database/user/remove-manager-from-users-table.sql";
 
-
     private static final String DELETE_RENTALS_DATA =
             "classpath:database/rental/delete-all-rentals.sql";
 
