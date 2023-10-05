@@ -34,7 +34,7 @@ public class RentalController {
     @PostMapping("/manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Place new rental",
+    @Operation(summary = "Place new rental by manager",
             description = "Add a new rental (decrease car inventory by 1)")
     public RentalResponseDto createByManager(
             @Valid @RequestBody CreateRentalByManagerDto createRentalByManagerDto) {

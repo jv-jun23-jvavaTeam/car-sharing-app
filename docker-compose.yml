@@ -3,6 +3,7 @@ version: "2.21.0"
 services:
   app:
     restart: on-failure
+    env_file: ./.env
     depends_on:
       mysqlserver:
         condition: service_healthy
@@ -19,6 +20,7 @@ services:
   mysqlserver:
     image: mysql
     restart: on-failure
+    env_file: ./.env
     ports:
       - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
     environment:

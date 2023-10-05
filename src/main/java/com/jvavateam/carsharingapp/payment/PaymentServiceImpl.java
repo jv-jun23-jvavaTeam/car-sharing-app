@@ -7,10 +7,13 @@ import com.jvavateam.carsharingapp.exception.PaymentException;
 import com.jvavateam.carsharingapp.mapper.payment.PaymentMapper;
 import com.jvavateam.carsharingapp.model.Payment;
 import com.jvavateam.carsharingapp.model.Rental;
+import com.jvavateam.carsharingapp.model.User;
+import com.jvavateam.carsharingapp.notification.NotificationService;
 import com.jvavateam.carsharingapp.payment.calculator.PaymentCalculationsHandler;
 import com.jvavateam.carsharingapp.payment.calculator.TotalCalculator;
 import com.jvavateam.carsharingapp.repository.payment.PaymentRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
+import com.jvavateam.carsharingapp.service.UserService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Price;
@@ -30,6 +33,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
+    private static final String SUCCESS_PAYMENT_MESSAGE = """
+            A new rental created!
+                        
+            📋 **Rental ID:** %d
+            🚗 **Car:** %s
+            📆 **Rental Date:** %s
+            🔙 **Expected Return Date:** %s
+            """;
     private static final String CURRENCY_NAME = "usd";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
     private static final Long EXPIRATION_TIME = Instant.now().getEpochSecond() + 86400L;
@@ -38,6 +49,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final PaymentMapper paymentMapper;
+    private final UserService userService;
+    private final NotificationService notificationService;
     private TotalCalculator calculator;
 
     @Value("${baseApiUrl}")
@@ -109,6 +122,12 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = getPaymentBySessionId(sessionId);
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
+
+        Rental rental = payment.getRental();
+        String message = getMessage(rental);
+        List<User> managers = userService.findAllManagers();
+        notificationService.sendMessage(rental.getUser(), message);
+        notificationService.notifyAll(managers, message);
     }
 
     private Payment getPaymentBySessionId(String sessionId) {
@@ -139,8 +158,8 @@ public class PaymentServiceImpl implements PaymentService {
                         .build())
                 .setExpiresAt(EXPIRATION_TIME)
                 .setSuccessUrl(baseApiUrl
-                        + apiSuccessEndpoint
-                        + "?sessionId={CHECKOUT_SESSION_ID}")
+                               + apiSuccessEndpoint
+                               + "?sessionId={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(baseApiUrl + apiCancelEndpoint)
                 .build();
         Session session = null;
@@ -215,5 +234,15 @@ public class PaymentServiceImpl implements PaymentService {
     private Long countTotal(Payment payment) {
         calculator = PaymentCalculationsHandler.getCalculator(payment);
         return calculator.calculateTotal(payment);
+    }
+
+    private String getMessage(Rental rental) {
+        return String.format(
+                SUCCESS_PAYMENT_MESSAGE,
+                rental.getId(),
+                rental.getCar().getModel() + " " + rental.getCar().getBrand(),
+                rental.getRentalDate(),
+                rental.getReturnDate()
+        );
     }
 }
