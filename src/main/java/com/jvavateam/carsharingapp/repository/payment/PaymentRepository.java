@@ -11,7 +11,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("""
             FROM Payment p JOIN FETCH p.rental r
             WHERE r.user.id = ?#{ principal?.id}
-            AND p.status = :status")
+            AND p.status = :status
             """)
     List<Payment> findAllByStatus(Payment.Status status);
 
