@@ -73,10 +73,10 @@ public class PaymentServiceImpl implements PaymentService {
         Rental rental = getRentalById(requestDto.rentalId());
 
         existsPaymentForRental(rental);
-
         checkRentalDates(rental);
 
         payment.setRental(rental);
+
         Session session = createSession(payment);
 
         payment.setSessionUrl(session.getUrl());
