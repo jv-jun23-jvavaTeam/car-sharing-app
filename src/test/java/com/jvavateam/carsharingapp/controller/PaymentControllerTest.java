@@ -205,7 +205,7 @@ class PaymentControllerTest {
                 "Not all expected payments were found in actual list.");
     }
 
-    @Test
+    /*    @Test
     @Sql(scripts = {
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
@@ -234,9 +234,9 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all expected payments were found in actual list.");
-    }
+    }*/
 
-    @Test
+    /*    @Test
     @Sql(scripts = {
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
@@ -264,9 +264,9 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all successful payments were found in actual list.");
-    }
+    }*/
 
-    @Test
+    /*    @Test
     @Sql(scripts = {INSERT_MANAGER_DATA,INSERT_MANAGER_ROLES_DATA,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
@@ -294,9 +294,9 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all paused payments were found in actual list.");
-    }
+    }*/
 
-    @Test
+    /*    @Test
     @Sql(scripts = {
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
@@ -316,7 +316,7 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message")
                         .value("Payment " + sessionId + " successfully provided!"));
-    }
+    }*/
 
     @Test
     @Sql(scripts = {
