@@ -79,10 +79,8 @@ public class RentalRepositoryTest {
     @Test
     @Sql(
             scripts = {
-                    INSERT_ROLES,
                     ADD_TOYOTA_CAR,
                     ADD_USER,
-                    CONNECT_USER_ROLE_TO_USER,
                     ADD_FIRST_RENTAL,
                     ADD_SECOND_RENTAL
             }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -92,8 +90,7 @@ public class RentalRepositoryTest {
                     CLEAR_RENTALS_TABLE,
                     CLEAR_USER_ROLES,
                     CLEAR_CARS_TABLE,
-                    CLEAR_USERS_TABLE,
-                    CLEAR_ROLES_TABLE,
+                    CLEAR_USERS_TABLE
             }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @WithUserDetails(OLEH_EMAIL)
