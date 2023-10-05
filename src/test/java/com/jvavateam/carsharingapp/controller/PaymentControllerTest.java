@@ -211,16 +211,18 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES,
+    @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES, INSERT_MANAGER_DATA,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA, DELETE_ROLES
+            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA,DELETE_MANAGER_DATA,
+            DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @WithUserDetails("manager@gmail.com")
+    @WithUserDetails("super_manager@gmail.com")
     @DisplayName("Verify getting all of certain user's payments")
     void getAllForCertainUser_ReturnsListOfPayments() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/payments/" + VALID_USER_CUSTOMER.getId())
@@ -242,7 +244,8 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES,
+    @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
@@ -272,7 +275,8 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES, INSERT_MANAGER_DATA,
+    @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES, INSERT_MANAGER_DATA,
             INSERT_MANAGER_ROLES_DATA, INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA,
             INSERT_CAR_DATA, INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA,
             INSERT_PAYMENT_UNPAID_DATA, INSERT_PAYMENT_PAID_DATA
@@ -303,7 +307,8 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES,
+    @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
@@ -325,7 +330,7 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES, INSERT_CUSTOMER_DATA,
+    @Sql(scripts = {INSERT_CUSTOMER_DATA,
             INSERT_USER_ROLES_DATA, INSERT_CAR_DATA, INSERT_RENTAL_ONE_DATA,
             INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
