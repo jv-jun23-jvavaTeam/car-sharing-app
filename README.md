@@ -111,14 +111,14 @@ to your postman and explore different endpoints:
 
 Login after registration:\
 <span style="display: inline-block; border: 5px solid #38ca75; border-radius: 25px; padding: 7px;">
-<img src="paintings/login-example.png" alt="CarRental" style="border-radius: 10px; width: 300px">
+<img src="paintings/login-example.png" alt="CarRental" style="border-radius: 10px; width: 600px">
 </span>
 
 
 Set to jwt token to your environment and "Save":
 
 <span style="display: inline-block; border: 5px solid #38ca75; border-radius: 25px; padding: 7px;">
-<img src="paintings/jwt-example.png" alt="CarRental" style="border-radius: 10px; width: 400px">
+<img src="paintings/jwt-example.png" alt="CarRental" style="border-radius: 10px; width: 800px">
 </span>
 
 Test different operations!
@@ -212,7 +212,7 @@ The project is organized as follows:
     - `application.properties`: Application properties for tests.
 
 
-### Infrastructure
+### Development Setup
 
 - Trello board for task management.
 - GitHub organization created.
