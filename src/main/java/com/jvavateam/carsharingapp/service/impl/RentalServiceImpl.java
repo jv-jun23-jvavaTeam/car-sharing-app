@@ -9,7 +9,6 @@ import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
-import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.rental.RentalRepository;
 import com.jvavateam.carsharingapp.repository.rental.RentalSpecificationBuilder;
 import com.jvavateam.carsharingapp.service.CarService;
@@ -46,8 +45,7 @@ public class RentalServiceImpl implements RentalService {
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
         decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
-        User currentUser = userService.getAuthentificatedUser();
-        rental.setUser(currentUser);
+        rental.setUser(userService.getAuthentificatedUser());
         Rental savedRental = rentalRepository.save(rental);
         return rentalMapper.toDto(savedRental);
     }
