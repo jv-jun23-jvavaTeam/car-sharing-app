@@ -16,6 +16,7 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Data
+@Accessors(chain = true)
 @SQLDelete(sql = "UPDATE cars SET is_deleted = true WHERE id = ?")
 @Accessors(chain = true)
 @Where(clause = "is_deleted = false")
