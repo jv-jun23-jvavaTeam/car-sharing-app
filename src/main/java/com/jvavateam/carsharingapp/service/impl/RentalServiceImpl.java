@@ -45,11 +45,11 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto createByManager(CreateRentalByManagerDto createRentalByManagerDto) {
-        decreaseCarInventory(createRentalByManagerDto.carId());
+        Car car = decreaseCarInventory(createRentalByManagerDto.carId());
         Rental rental = rentalMapper.toModel(createRentalByManagerDto);
+        rental.setCar(car);
         Rental savedRental = rentalRepository.save(rental);
-
-        String message = getMessage(rental);
+        String message = getMessage(savedRental);
         notificationService.sendMessage(savedRental.getUser(), message);
         return rentalMapper.toDto(savedRental);
     }
@@ -57,8 +57,9 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalResponseDto create(CreateRentalDto createRentalDto) {
-        decreaseCarInventory(createRentalDto.carId());
+        Car car = decreaseCarInventory(createRentalDto.carId());
         Rental rental = rentalMapper.toModel(createRentalDto);
+        rental.setCar(car);
         rental.setUser(userService.getAuthentificatedUser());
         Rental savedRental = rentalRepository.save(rental);
 
@@ -119,17 +120,17 @@ public class RentalServiceImpl implements RentalService {
         carService.update(carForIncreasing);
     }
 
-    private void decreaseCarInventory(Long decreasingCarId) {
+    private Car decreaseCarInventory(Long decreasingCarId) {
         Car carForDecreasing = carService.findById(decreasingCarId);
         carForDecreasing.setInventory(carForDecreasing.getInventory() - 1);
-        carService.update(carForDecreasing);
+        return carService.update(carForDecreasing);
     }
 
     private String getMessage(Rental rental) {
         return String.format(
                 RENTAL_INFO_TEMPLATE,
                 rental.getId(),
-                rental.getCar().getModel() + " " + rental.getCar().getBrand(),
+                rental.getCar().getBrand() + " " + rental.getCar().getModel(),
                 rental.getRentalDate(),
                 rental.getReturnDate()
         );

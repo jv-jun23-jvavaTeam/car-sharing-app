@@ -23,7 +23,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long>,
     @EntityGraph(attributePaths = {"car", "user"})
     @Query("""
                 FROM Rental r
-                WHERE r.rentalDate > :tomorrow
+                WHERE r.returnDate > :tomorrow
             """)
     List<Rental> findAllOverdue(LocalDate tomorrow);
 }
