@@ -185,6 +185,7 @@ class RentalServiceTest {
         when(rentalMapper.toDto(CREATED_RENTAL)).thenReturn(RESPONSE_CREATED_RENTAL_DTO);
         when(carService.findById(CAR_ID)).thenReturn(CAR);
         when(userService.getAuthentificatedUser()).thenReturn(USER);
+        when(carService.update(CAR)).thenReturn(CAR);
         RentalResponseDto actual = rentalService.create(REQUEST_CREATE_RENTAL_DTO);
         Mockito.verify(notificationService, times(1)).notifyAll(any(),any());
         Mockito.verify(notificationService, times(1)).sendMessage(any(),any());
@@ -198,7 +199,7 @@ class RentalServiceTest {
         when(rentalRepository.save(CREATED_RENTAL)).thenReturn(CREATED_RENTAL);
         when(rentalMapper.toDto(CREATED_RENTAL)).thenReturn(RESPONSE_CREATED_RENTAL_DTO);
         when(carService.findById(CAR_ID)).thenReturn(CAR);
-
+        when(carService.update(CAR)).thenReturn(CAR);
         RentalResponseDto actual =
                 rentalService.createByManager(REQUEST_CREATE_RENTAL_BY_MANAGER_DTO);
         assertEquals(RESPONSE_CREATED_RENTAL_DTO, actual);
