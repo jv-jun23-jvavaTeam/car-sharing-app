@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,15 +17,19 @@ import com.jvavateam.carsharingapp.model.User;
 import jakarta.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -32,8 +37,10 @@ import org.springframework.web.context.WebApplicationContext;
 class PaymentControllerTest {
     protected static MockMvc mockMvc;
     private static final String CUSTOMER = "wylo@ua.com";
-    private static final String MANAGER = "manager@gmail.com";
+    private static final String MANAGER = "super_manager@gmail.com";
 
+    private static final String INSERT_ROLES =
+            "classpath:database/role/insert-roles.sql";
     private static final String INSERT_CUSTOMER_DATA =
             "classpath:database/user/add-sample-user-to-users-table.sql";
     private static final String INSERT_MANAGER_DATA =
@@ -57,6 +64,9 @@ class PaymentControllerTest {
             "classpath:database/payment/add-first-payment.sql";
     private static final String INSERT_PAYMENT_PAID_DATA =
             "classpath:database/payment/add-second-payment.sql";
+
+    private static final String DELETE_ROLES =
+            "classpath:database/role/clear-roles-table.sql";
 
     private static final String DELETE_CUSTOMER_DATA =
             "classpath:database/user/remove-sample-user-from-users-table.sql";
@@ -151,11 +161,11 @@ class PaymentControllerTest {
     }
 
     @Test
-    @Sql(scripts = {
+    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
-            DELETE_CUSTOMER_DATA, DELETE_USER_ROLES_DATA
+            DELETE_CUSTOMER_DATA, DELETE_USER_ROLES_DATA, DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify creation of a new payment session")
@@ -169,15 +179,15 @@ class PaymentControllerTest {
                 .andReturn();
     }
 
-    /*@Test
-    @Sql(scripts = {
+    @Test
+    @Sql(scripts = {DELETE_ROLES, INSERT_ROLES,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA, DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify getting all of current user's payments")
@@ -198,19 +208,22 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all expected payments were found in actual list.");
-    }*/
+    }
 
-    /*    @Test
+    @Test
     @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES, INSERT_MANAGER_DATA,
+            INSERT_MANAGER_ROLES_DATA,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA,DELETE_MANAGER_DATA,
+            DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @WithUserDetails("super_manager@gmail.com")
+    @WithUserDetails(MANAGER)
     @DisplayName("Verify getting all of certain user's payments")
     void getAllForCertainUser_ReturnsListOfPayments() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/payments/" + VALID_USER_CUSTOMER.getId())
@@ -229,17 +242,18 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all expected payments were found in actual list.");
-    }*/
+    }
 
-    /*    @Test
+    @Test
     @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA, DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify getting all of current user's successful payments")
@@ -259,17 +273,19 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all successful payments were found in actual list.");
-    }*/
+    }
 
-    /*    @Test
-    @Sql(scripts = {INSERT_MANAGER_DATA,INSERT_MANAGER_ROLES_DATA,
-            INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
-            INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
-            INSERT_PAYMENT_PAID_DATA
+    @Test
+    @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES, INSERT_MANAGER_DATA,
+            INSERT_MANAGER_ROLES_DATA, INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA,
+            INSERT_CAR_DATA, INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA,
+            INSERT_PAYMENT_UNPAID_DATA, INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_MANAGER_DATA, DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_MANAGER_DATA, DELETE_USER_ROLES_DATA, DELETE_CAR_DATA,
+            DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify getting all of current user's successful payments")
@@ -289,17 +305,18 @@ class PaymentControllerTest {
                                 expected.id().equals(actualFound.id())));
         assertTrue(allExpectedFound,
                 "Not all paused payments were found in actual list.");
-    }*/
+    }
 
-    /*    @Test
+    @Test
     @Sql(scripts = {
+            DELETE_ROLES, INSERT_ROLES,
             INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
             INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA, DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify getting successful message on redirection successful page")
@@ -311,17 +328,17 @@ class PaymentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message")
                         .value("Payment " + sessionId + " successfully provided!"));
-    }*/
+    }
 
     @Test
-    @Sql(scripts = {
-            INSERT_CUSTOMER_DATA, INSERT_USER_ROLES_DATA, INSERT_CAR_DATA,
-            INSERT_RENTAL_ONE_DATA, INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
+    @Sql(scripts = {INSERT_CUSTOMER_DATA,
+            INSERT_USER_ROLES_DATA, INSERT_CAR_DATA, INSERT_RENTAL_ONE_DATA,
+            INSERT_RENTAL_TWO_DATA, INSERT_PAYMENT_UNPAID_DATA,
             INSERT_PAYMENT_PAID_DATA
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             DELETE_PAYMENT_DATA, DELETE_RENTALS_DATA, DELETE_CUSTOMER_DATA,
-            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA
+            DELETE_USER_ROLES_DATA, DELETE_CAR_DATA, DELETE_ROLES
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(CUSTOMER)
     @DisplayName("Verify getting cancel message on redirection cancel page")
