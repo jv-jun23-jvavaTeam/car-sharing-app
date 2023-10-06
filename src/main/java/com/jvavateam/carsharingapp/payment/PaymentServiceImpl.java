@@ -24,6 +24,8 @@ import com.stripe.param.ProductCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,13 +35,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-    private static final String SUCCESS_PAYMENT_MESSAGE = """
-            A new rental created!
-                        
-            📋 **Rental ID:** %d
-            🚗 **Car:** %s
-            📆 **Rental Date:** %s
-            🔙 **Expected Return Date:** %s
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd HH:mm:ss"
+    );
+    private static final String SHARED_PAYMENT_DETAILS = """
+            🌟 *Payment Successful* 🌟
+
+            💳 Payment ID: %d
+            🚗 Rental ID: %d
+            💰 Amount Paid: %s
+            📅 Date and Time: %s
+
+            Payment has been successfully processed! 🎉
+
+            Best regards,
+            Jvava Car Sharing
+            """;
+
+    private static final String CLIENT_PAYMENT_NOTIFICATION = """
+            Hello %s! 👋
+
+            Here are the payment details for your recent transaction:
+
+            %s
             """;
     private static final String CURRENCY_NAME = "usd";
     private static final Long MAX_NUMBER_OF_CARS_TO_RENT = 1L;
@@ -123,11 +141,18 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
 
-        Rental rental = payment.getRental();
-        String message = getMessage(rental);
+        String message = getMessage(payment);
         List<User> managers = userService.findAllManagers();
-        notificationService.sendMessage(rental.getUser(), message);
         notificationService.notifyAll(managers, message);
+
+        User client = payment.getRental().getUser();
+        notificationService.sendMessage(
+                client,
+                String.format(
+                        CLIENT_PAYMENT_NOTIFICATION,
+                        client.getFirstName(),
+                        message
+                ));
     }
 
     private Payment getPaymentBySessionId(String sessionId) {
@@ -212,7 +237,7 @@ public class PaymentServiceImpl implements PaymentService {
     private void existsPendingPayment(String type) {
         boolean check = paymentRepository.findAll().stream()
                 .anyMatch(payment -> payment.getStatus().equals(Payment.Status.PENDING)
-                        && payment.getType().name().equals(type));
+                                     && payment.getType().name().equals(type));
         if (check) {
             throw new PaymentException(
                     "You have  unpaid payments! New payment can not be created!");
@@ -222,11 +247,11 @@ public class PaymentServiceImpl implements PaymentService {
     private void existsPaymentForRental(Rental rental, Payment payment) {
         boolean check = paymentRepository.findAll().stream()
                 .anyMatch(p -> p.getRental().equals(rental)
-                        && p.getType().equals(payment.getType()));
+                               && p.getType().equals(payment.getType()));
         if (check) {
             throw new PaymentException(
                     "You have already payment with type " + payment.getType()
-                            + " for this rental! New payment can not be created!");
+                    + " for this rental! New payment can not be created!");
         }
     }
 
@@ -239,13 +264,13 @@ public class PaymentServiceImpl implements PaymentService {
         return calculator.calculateTotal(payment);
     }
 
-    private String getMessage(Rental rental) {
+    private String getMessage(Payment payment) {
         return String.format(
-                SUCCESS_PAYMENT_MESSAGE,
-                rental.getId(),
-                rental.getCar().getModel() + " " + rental.getCar().getBrand(),
-                rental.getRentalDate(),
-                rental.getReturnDate()
+                SHARED_PAYMENT_DETAILS,
+                payment.getId(),
+                payment.getRental().getId(),
+                payment.getAmountToPay(),
+                LocalDateTime.now().format(DATE_TIME_FORMATTER)
         );
     }
 }

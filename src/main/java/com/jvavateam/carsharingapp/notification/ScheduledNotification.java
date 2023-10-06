@@ -73,7 +73,7 @@ public class ScheduledNotification {
     }
 
     private String getRentalInfo(Rental rental) {
-        String carInfo = rental.getCar().getModel() + " " + rental.getCar().getBrand();
+        String carInfo = rental.getCar().getBrand() + " " + rental.getCar().getModel();
         return String.format(
                 RENTAL_INFO_TEMPLATE,
                 rental.getId(),

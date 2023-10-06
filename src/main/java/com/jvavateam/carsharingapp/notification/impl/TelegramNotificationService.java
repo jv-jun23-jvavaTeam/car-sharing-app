@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.notification.impl;
 
+import com.jvavateam.carsharingapp.model.Subscription;
 import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.notification.NotificationService;
 import com.jvavateam.carsharingapp.notification.telegram.TelegramBotService;
@@ -27,9 +28,10 @@ public class TelegramNotificationService implements NotificationService {
     @Override
     public boolean notifyAll(List<User> users, String message) {
         List<Long> userIds = users.stream().map(User::getId).toList();
-        return subscriptionRepository.findAllById(userIds)
-                .stream()
-                .peek(subscription -> bot.sendMessage(subscription.getChatId(), message))
-                .count() > 0;
+        List<Subscription> subscriptions = subscriptionRepository.findAllById(userIds);
+        subscriptions.forEach(
+                subscription -> bot.sendMessage(subscription.getChatId(), message)
+        );
+        return !subscriptions.isEmpty();
     }
 }
