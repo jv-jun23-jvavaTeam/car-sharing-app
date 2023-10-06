@@ -121,7 +121,7 @@ To stop a container, use:\
 
 After starting the application, you can access the API documentation and endpoints at
 [Swagger Documentation](http://localhost:8088/api/swagger-ui/index.html).\
-Or Postman with [this](Car_sharring_postman_collection.json) collections.
+Or Postman with [these](car_sharring_postman_collection.json) collections.
 
 ## Swagger Documentation
 
@@ -249,7 +249,7 @@ The project is organized as follows:
 
 ### Development Setup
 
-- [Trello](Trello) board for task management.
+- [Trello](https://trello.com/) board for task management.
 - [GitHub organization](https://github.com/jv-jun23-jvavaTeam) created.
 - CI process configured.
 - Liquibase support added.
@@ -264,7 +264,7 @@ we gained valuable insights into collaborative teamwork.
 
 We successfully managed tight deadlines,
 emphasizing effective time management.\
-Our team utilized [Trello](Trello) as a powerful tool for task management,
+Our team utilized [Trello](https://trello.com/) as a powerful tool for task management,
 enabling seamless coordination and efficient project execution.\
 Additionally, we acquired new knowledge in handling online notifications and managing financial transactions.
 
