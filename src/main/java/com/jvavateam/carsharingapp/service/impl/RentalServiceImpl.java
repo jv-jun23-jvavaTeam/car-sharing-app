@@ -71,7 +71,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public List<RentalResponseDto> getAllByManager(RentalSearchParameters searchParameters,
                                                    Pageable pageable) {
         Specification<Rental> searchSpecification =
@@ -82,16 +81,15 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    @Transactional
     public List<RentalResponseDto> getAll(Pageable pageable) {
-        return rentalRepository.findAll(pageable).stream()
+        return rentalRepository.findAllForCurrentUser(pageable).stream()
                 .map(rentalMapper::toDto)
                 .toList();
     }
 
     @Override
     public RentalResponseDto getById(Long id) {
-        Rental rental = rentalRepository.getByIdForCurrentUser(id)
+        Rental rental = rentalRepository.findByIdForCurrentUser(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can`t find rental with id: " + id));
         return rentalMapper.toDto(rental);
     }
@@ -99,7 +97,7 @@ public class RentalServiceImpl implements RentalService {
     @Override
     @Transactional
     public RentalReturnResponseDto completeRental(Long id) {
-        Rental rental = rentalRepository.getByIdForCurrentUser(id)
+        Rental rental = rentalRepository.findByIdForCurrentUser(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can`t find rental with id: " + id));
         Car returnedCar = rental.getCar();
         increaseCarInventory(returnedCar.getId());

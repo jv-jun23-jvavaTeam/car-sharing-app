@@ -96,7 +96,7 @@ public class RentalRepositoryTest {
     @WithUserDetails(OLEH_EMAIL)
     @DisplayName("Verify returned rental by id")
     public void getByIdForCurrentUser_validRentalId_shouldReturnUserRental() {
-        Optional<Rental> rentalById = rentalRepository.getByIdForCurrentUser(RENTAL_ID);
+        Optional<Rental> rentalById = rentalRepository.findByIdForCurrentUser(RENTAL_ID);
         assertTrue(rentalById.isPresent());
         assertEquals(TOYOTA_RENTAL, rentalById.get());
     }

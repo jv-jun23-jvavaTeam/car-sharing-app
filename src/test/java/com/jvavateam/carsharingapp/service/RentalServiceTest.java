@@ -222,7 +222,8 @@ class RentalServiceTest {
     @Test
     @DisplayName("Verify get all rentals for specific user")
     void getAll_validUser_shouldReturnRentalDtos() {
-        when(rentalRepository.findAll(DEFAULT_PAGEABLE)).thenReturn(REPOSITORY_PAGE);
+        when(rentalRepository.findAllForCurrentUser(DEFAULT_PAGEABLE))
+                .thenReturn(REPOSITORY_RENTALS);
         when(rentalMapper.toDto(CREATED_RENTAL)).thenReturn(RESPONSE_CREATED_RENTAL_DTO);
         when(rentalMapper.toDto(SECOND_RENTAL)).thenReturn(SECOND_RENTAL_DTO);
 
@@ -233,7 +234,7 @@ class RentalServiceTest {
     @Test
     @DisplayName("Verify get rental by id")
     void getById_validRentalId_shouldReturnRentalDto() {
-        when(rentalRepository.getByIdForCurrentUser(SECOND_RENTAL_ID))
+        when(rentalRepository.findByIdForCurrentUser(SECOND_RENTAL_ID))
                 .thenReturn(Optional.ofNullable(SECOND_RENTAL));
         when(rentalMapper.toDto(SECOND_RENTAL)).thenReturn(SECOND_RENTAL_DTO);
 
@@ -244,7 +245,7 @@ class RentalServiceTest {
     @Test
     @DisplayName("Verify complete rental with Valid Id")
     void completeRental_validRentalId_shouldReturnRentalDto() {
-        when(rentalRepository.getByIdForCurrentUser(SECOND_RENTAL_ID))
+        when(rentalRepository.findByIdForCurrentUser(SECOND_RENTAL_ID))
                 .thenReturn(Optional.ofNullable(SECOND_RENTAL));
         when(rentalRepository.save(SECOND_RENTAL))
                 .thenReturn(SAVED_RETURN_SECOND_RENTAL);
@@ -272,7 +273,8 @@ class RentalServiceTest {
     @Test
     @DisplayName("Verify complete rental with invalid ID throws EntityNotFoundException")
     void completeRental_invalidRentalId_shouldThrowEntityNotFoundException() {
-        when(rentalRepository.getByIdForCurrentUser(SECOND_RENTAL_ID)).thenReturn(Optional.empty());
+        when(rentalRepository.findByIdForCurrentUser(SECOND_RENTAL_ID))
+                .thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
