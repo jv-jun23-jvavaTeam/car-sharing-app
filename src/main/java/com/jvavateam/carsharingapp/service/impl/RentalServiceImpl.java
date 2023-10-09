@@ -77,16 +77,9 @@ public class RentalServiceImpl implements RentalService {
                                                    Pageable pageable) {
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
-        try {
-            return rentalRepository.findAll(searchSpecification, pageable).stream()
-                    .map(rentalMapper::toDto)
-                    .toList();
-        } catch (NoSuchElementException e) {
-            throw new InvalidRequestParametersException("Entered wrong search params. "
-                    + "Entered: \nUser id: " + searchParameters.userId()
-                    + "\nIs active: " + searchParameters.isActive()
-            );
-        }
+        return rentalRepository.findAll(searchSpecification, pageable).stream()
+                .map(rentalMapper::toDto)
+                .toList();
     }
 
     @Override

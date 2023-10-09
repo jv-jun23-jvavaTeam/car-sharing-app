@@ -29,6 +29,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String PAYMENT_ERROR_MESSAGE =
             "An error occured while proceeding payment: ";
 
+    private static final String INVALID_SPECIFICATION_KEY_ERROR_MESSAGE =
+            "An error occurred while peeking specification provider: ";
     private static final String ENTITY_NOT_FOUND_MESSAGE =
             "An error occurred while proceeding data from database. "
                     + "Nothing found by provided parameters: ";
@@ -142,6 +144,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         ErrorResponseDto errorResponse =
                 getErrorMessageBody(PAYMENT_ERROR_MESSAGE
+                                + ex.getMessage(),
+                        HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchSpecificationProviderException.class)
+    protected ResponseEntity<ErrorResponseDto> handleNoSuchSpecificationProviderException(
+            NoSuchSpecificationProviderException ex
+    ) {
+        ErrorResponseDto errorResponse =
+                getErrorMessageBody(INVALID_SPECIFICATION_KEY_ERROR_MESSAGE
                                 + ex.getMessage(),
                         HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
