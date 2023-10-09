@@ -6,6 +6,7 @@ import com.jvavateam.carsharingapp.dto.rental.RentalResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalReturnResponseDto;
 import com.jvavateam.carsharingapp.dto.rental.RentalSearchParameters;
 import com.jvavateam.carsharingapp.exception.EntityNotFoundException;
+import com.jvavateam.carsharingapp.exception.InvalidRequestParametersException;
 import com.jvavateam.carsharingapp.mapper.rental.RentalMapper;
 import com.jvavateam.carsharingapp.model.Car;
 import com.jvavateam.carsharingapp.model.Rental;
@@ -18,6 +19,7 @@ import com.jvavateam.carsharingapp.service.RentalService;
 import com.jvavateam.carsharingapp.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -75,9 +77,16 @@ public class RentalServiceImpl implements RentalService {
                                                    Pageable pageable) {
         Specification<Rental> searchSpecification =
                 rentalSpecificationBuilder.build(searchParameters);
-        return rentalRepository.findAll(searchSpecification, pageable).stream()
-                .map(rentalMapper::toDto)
-                .toList();
+        try {
+            return rentalRepository.findAll(searchSpecification, pageable).stream()
+                    .map(rentalMapper::toDto)
+                    .toList();
+        } catch (NoSuchElementException e) {
+            throw new InvalidRequestParametersException("Entered wrong search params. "
+                    + "Entered: \nUser id: " + searchParameters.userId()
+                    + "\nIs active: " + searchParameters.isActive()
+            );
+        }
     }
 
     @Override
