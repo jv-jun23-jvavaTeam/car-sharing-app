@@ -54,13 +54,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpStatusCode status,
             @NonNull WebRequest request
     ) {
-        ErrorResponseListDto errorResponse = new ErrorResponseListDto();
-        errorResponse.setTimestamp(LocalDateTime.now());
-        errorResponse.setStatus(HttpStatus.BAD_REQUEST);
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(this::getErrorMessage)
                 .toList();
-        errorResponse.setValidationErrors(errors);
+        ErrorResponseListDto errorResponse = new ErrorResponseListDto(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                errors
+        );
         return new ResponseEntity<>(errorResponse, headers, status);
     }
 
@@ -157,11 +158,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
-        ErrorResponseDto errorResponse = new ErrorResponseDto();
-        errorResponse.setTimestamp(LocalDateTime.now());
-        errorResponse.setStatus(httpStatus);
-        errorResponse.setError(errorMessage);
-        return errorResponse;
+        return new ErrorResponseDto(
+                LocalDateTime.now(),
+                httpStatus,
+                errorMessage
+        );
     }
 
     private String getErrorMessage(ObjectError ex) {
