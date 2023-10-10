@@ -71,13 +71,13 @@ public class PaymentServiceImpl implements PaymentService {
     private final NotificationService notificationService;
     private TotalCalculator calculator;
 
-    @Value("${baseApiUrl}")
+    @Value("${base.api.url}")
     private String baseApiUrl;
-    @Value("${apiSuccessEndpoint}")
+    @Value("${api.success.endpoint}")
     private String apiSuccessEndpoint;
-    @Value("${apiCancelEndpoint}")
+    @Value("${api.cancel.endpoint}")
     private String apiCancelEndpoint;
-    @Value("${stripe.secretKey}")
+    @Value("${stripe.secret.key}")
     private String stripeKey;
 
     @Override
