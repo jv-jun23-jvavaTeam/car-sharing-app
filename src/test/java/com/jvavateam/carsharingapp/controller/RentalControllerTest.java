@@ -360,9 +360,10 @@ public class RentalControllerTest {
     @Test
     @Sql(
             scripts = {
+                    CLEAR_ROLES_TABLE,
+                    INSERT_ROLES,
                     ADD_TOYOTA_CAR,
                     ADD_USER,
-                    INSERT_ROLES,
                     CONNECT_USER_ROLE_TO_USER,
                     ADD_FIRST_RENTAL,
                     ADD_SECOND_RENTAL

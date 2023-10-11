@@ -73,6 +73,10 @@ public class CarControllerTest {
             "classpath:database/connect_user_role/connect-sample-manager-role.sql";
     private static final String CLEAR_USER_ROLES =
             "classpath:database/connect_user_role/clear_user_roles_connection.sql";
+    private static final String ADD_ROLES =
+            "classpath:database/role/insert-roles.sql";
+    private static final String CLEAR_ROLES =
+            "classpath:database/role/clear-roles-table.sql";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -88,6 +92,8 @@ public class CarControllerTest {
 
     @Sql(
             scripts = {
+                    CLEAR_ROLES,
+                    ADD_ROLES,
                     ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
                     CLEAR_CARS_TABLE,
@@ -123,6 +129,8 @@ public class CarControllerTest {
 
     @Sql(
             scripts = {
+                    CLEAR_ROLES,
+                    ADD_ROLES,
                     ADD_USER,
                     CONNECT_USER_ROLE_TO_USER,
                     ADD_TOYOTA_CAR
@@ -157,6 +165,8 @@ public class CarControllerTest {
 
     @Sql(
             scripts = {
+                    CLEAR_ROLES,
+                    ADD_ROLES,
                     ADD_MANAGER,
                     CONNECT_MANAGER_ROLE_TO_MANAGER,
                     ADD_TOYOTA_CAR
@@ -193,6 +203,8 @@ public class CarControllerTest {
 
     @Sql(
             scripts = {
+                    CLEAR_ROLES,
+                    ADD_ROLES,
                     ADD_MANAGER,
                     CONNECT_MANAGER_ROLE_TO_MANAGER,
                     ADD_TOYOTA_CAR
@@ -217,6 +229,8 @@ public class CarControllerTest {
 
     @Sql(
             scripts = {
+                    CLEAR_ROLES,
+                    ADD_ROLES,
                     ADD_MANAGER,
                     CONNECT_MANAGER_ROLE_TO_MANAGER,
                     ADD_TOYOTA_CAR

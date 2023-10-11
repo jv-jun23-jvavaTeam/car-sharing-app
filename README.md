@@ -178,7 +178,6 @@ Our application has the following controllers:
 The project is organized as follows:
 
 - `.github`: Configuration files for GitHub.
-- `.idea`: Configuration for IntelliJ IDEA.
 - `.mvn`: Maven configuration files.
 - `paintings`: Directory for README.md graphics.
 - `src`: The main directory for the Java source code.

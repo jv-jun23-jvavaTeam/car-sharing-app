@@ -1,11 +1,11 @@
 package com.jvavateam.carsharingapp.repository.rental;
 
+import com.jvavateam.carsharingapp.exception.NoSuchSpecificationProviderException;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.repository.SpecificationBooleanProvider;
 import com.jvavateam.carsharingapp.repository.SpecificationLongProvider;
 import com.jvavateam.carsharingapp.repository.SpecificationProviderManager;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class RentalSpecificationProviderManager implements SpecificationProvider
                 .filter(b -> b.getKey().equals(key))
                 .findFirst()
                 .orElseThrow(() ->
-                        new NoSuchElementException(
+                        new NoSuchSpecificationProviderException(
                                 "Can`t find correct specification provider for key: "
                                         + key));
     }
@@ -32,7 +32,7 @@ public class RentalSpecificationProviderManager implements SpecificationProvider
                 .filter(b -> b.getKey().equals(key))
                 .findFirst()
                 .orElseThrow(() ->
-                        new NoSuchElementException(
+                        new NoSuchSpecificationProviderException(
                                 "Can`t find correct specification provider for key: "
                                         + key));
     }

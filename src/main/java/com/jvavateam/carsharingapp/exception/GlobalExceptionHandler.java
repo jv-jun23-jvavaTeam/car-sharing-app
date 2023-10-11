@@ -29,6 +29,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String PAYMENT_ERROR_MESSAGE =
             "An error occured while proceeding payment: ";
 
+    private static final String INVALID_SPECIFICATION_KEY_ERROR_MESSAGE =
+            "An error occurred while peeking specification provider: ";
     private static final String ENTITY_NOT_FOUND_MESSAGE =
             "An error occurred while proceeding data from database. "
                     + "Nothing found by provided parameters: ";
@@ -54,13 +56,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpStatusCode status,
             @NonNull WebRequest request
     ) {
-        ErrorResponseListDto errorResponse = new ErrorResponseListDto();
-        errorResponse.setTimestamp(LocalDateTime.now());
-        errorResponse.setStatus(HttpStatus.BAD_REQUEST);
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(this::getErrorMessage)
                 .toList();
-        errorResponse.setValidationErrors(errors);
+        ErrorResponseListDto errorResponse = new ErrorResponseListDto(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                errors
+        );
         return new ResponseEntity<>(errorResponse, headers, status);
     }
 
@@ -147,6 +150,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NoSuchSpecificationProviderException.class)
+    protected ResponseEntity<ErrorResponseDto> handleNoSuchSpecificationProviderException(
+            NoSuchSpecificationProviderException ex
+    ) {
+        ErrorResponseDto errorResponse =
+                getErrorMessageBody(INVALID_SPECIFICATION_KEY_ERROR_MESSAGE
+                                + ex.getMessage(),
+                        HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<Object> handleAllErrors(Exception exception) {
         logger.error("Internal server error: ", exception);
@@ -157,11 +171,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ErrorResponseDto getErrorMessageBody(String errorMessage, HttpStatus httpStatus) {
-        ErrorResponseDto errorResponse = new ErrorResponseDto();
-        errorResponse.setTimestamp(LocalDateTime.now());
-        errorResponse.setStatus(httpStatus);
-        errorResponse.setError(errorMessage);
-        return errorResponse;
+        return new ErrorResponseDto(
+                LocalDateTime.now(),
+                httpStatus,
+                errorMessage
+        );
     }
 
     private String getErrorMessage(ObjectError ex) {
