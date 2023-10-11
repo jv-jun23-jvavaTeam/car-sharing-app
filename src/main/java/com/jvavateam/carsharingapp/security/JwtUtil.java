@@ -9,17 +9,21 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
     private final Key secret;
-    @Value("${jwt.expiration}")
-    private long expiration;
+    private final long expiration;
 
-    public JwtUtil(@Value("${jwt.secret}") String secretString) {
+    public JwtUtil(@Value("${jwt.secret}") String secretString,
+                   @Value("${jwt.expiration}") long expiration) {
         secret = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
+        this.expiration = expiration;
     }
 
     public String generateToken(String email) {
@@ -33,27 +37,23 @@ public class JwtUtil {
 
     public boolean isValidToken(String token) {
         try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(secret)
-                    .build()
-                    .parseClaimsJws(token);
-
-            return !claimsJws.getBody().getExpiration().before(new Date());
+            parseToken(token);
+            return true;
         } catch (JwtException | IllegalArgumentException ex) {
-            throw new JwtException("Expired or invalid JWT token");
+            logger.warn("Expired or invalid JWT token");
         }
+        return false;
     }
 
-    public String getEmail(String token) {
-        return getClaimsFromToken(token, Claims::getSubject);
+    public <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = parseToken(token).getBody();
+        return claimsResolver.apply(claims);
     }
 
-    private <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = Jwts.parserBuilder()
+    private Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(secret)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claimsResolver.apply(claims);
+                .parseClaimsJws(token);
     }
 }

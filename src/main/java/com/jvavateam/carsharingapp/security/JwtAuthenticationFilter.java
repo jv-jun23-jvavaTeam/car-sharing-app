@@ -1,5 +1,6 @@
 package com.jvavateam.carsharingapp.security;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +19,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final int BEGINNING_OF_TOKEN = 7;
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_OF_TOKEN = "Bearer ";
+    private static final String BEARER = "Bearer ";
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -32,11 +32,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = getToken(request);
         if (token != null && jwtUtil.isValidToken(token)) {
-            String email = jwtUtil.getEmail(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
+            String userName = jwtUtil.getClaimsFromToken(token, Claims::getSubject);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+            );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
@@ -44,8 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_OF_TOKEN)) {
-            return bearerToken.substring(BEGINNING_OF_TOKEN);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER)) {
+            return bearerToken.substring(BEARER.length());
         }
         return null;
     }
