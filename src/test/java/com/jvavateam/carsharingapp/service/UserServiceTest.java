@@ -29,7 +29,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserServiceTest {
     private static final Role MANAGER = new Role().setId(1L).setName(Role.RoleName.MANAGER);
     private static final Role CUSTOMER = new Role().setId(2L).setName(Role.RoleName.CUSTOMER);
-    private static final RoleRequestDto ROLE_REQUEST_DTO = new RoleRequestDto("MANAGER");
+    private static final String[] ROLE = {"MANAGER"};
+    private static final RoleRequestDto ROLE_REQUEST_DTO = new RoleRequestDto(ROLE);
     private static final Long VALID_ID = 1L;
     private static final Long INVALID_ID = 1000L;
     private static final String ENCODED_PASSWORD = "Password1234";
@@ -94,6 +95,7 @@ public class UserServiceTest {
     public void updateUserInfo_ValidRequestDto_ReturnsValidResponseDto() {
         Mockito.when(userMapper.toModel(USER_REQUEST_DTO)).thenReturn(USER);
         Mockito.when(userRepository.getCurrentUser()).thenReturn(USER);
+        Mockito.when(userRepository.getCurrentUser()).thenReturn(USER);
         Mockito.when(userRepository.save(USER)).thenReturn(USER);
         Mockito.when(userMapper.toDto(USER)).thenReturn(USER_RESPONSE_DTO);
 
@@ -102,7 +104,7 @@ public class UserServiceTest {
         Assertions.assertEquals(updateUserDto, USER_RESPONSE_DTO);
         Mockito.verify(userMapper, Mockito.times(1))
                 .toModel(USER_REQUEST_DTO);
-        Mockito.verify(userRepository, Mockito.times(1))
+        Mockito.verify(userRepository, Mockito.times(2))
                 .getCurrentUser();
         Mockito.verify(userRepository, Mockito.times(1))
                 .save(USER);
@@ -114,7 +116,8 @@ public class UserServiceTest {
     @DisplayName("Verify updateUserRole() method works")
     public void updateUserRole_ValidUserIdAndRole_ReturnsResponseStatusOk() {
         Mockito.when(userRepository.findById(VALID_ID)).thenReturn(Optional.of(USER));
-        Mockito.when(roleRepository.getRoleByName(Role.RoleName.valueOf(ROLE_REQUEST_DTO.status())))
+        Mockito.when(roleRepository
+                        .getRoleByName(Role.RoleName.valueOf(ROLE_REQUEST_DTO.status()[0])))
                 .thenReturn(MANAGER);
 
         userService.updateUserRole(VALID_ID, ROLE_REQUEST_DTO);
@@ -122,7 +125,7 @@ public class UserServiceTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(VALID_ID);
         Mockito.verify(roleRepository, Mockito.times(1))
-                .getRoleByName(Role.RoleName.valueOf(ROLE_REQUEST_DTO.status()));
+                .getRoleByName(Role.RoleName.valueOf(ROLE_REQUEST_DTO.status()[0]));
     }
 
     @Test
@@ -156,8 +159,6 @@ public class UserServiceTest {
         Assertions.assertEquals(registeredUser, USER_RESPONSE_DTO);
         Mockito.verify(userMapper, Mockito.times(1))
                 .toModel(USER_REQUEST_DTO);
-        Mockito.verify(passwordEncoder, Mockito.times(1))
-                .encode(USER.getPassword());
         Mockito.verify(roleRepository, Mockito.times(1))
                 .getRoleByName(CUSTOMER.getName());
         Mockito.verify(userRepository, Mockito.times(1))

@@ -31,6 +31,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 @Import(SecurityConfig.class)
 public class UserControllerTest {
     protected static MockMvc mockMvc;
+    private static final String[] ROLE = {"CUSTOMER"};
     private static final String ADD_USER
             = "classpath:database/user/add-sample-user-to-users-table.sql";
     private static final String ADD_MANAGER
@@ -51,7 +52,7 @@ public class UserControllerTest {
     private static final String USER_EMAIL = "wylo@ua.com";
     private static final String MANAGER_EMAIL = "super_manager@gmail.com";
     private static final RoleRequestDto ROLE_REQUEST_DTO
-            = new RoleRequestDto("CUSTOMER");
+            = new RoleRequestDto(ROLE);
 
     private static final UserResponseDto USER_RESPONSE_DTO
             = new UserResponseDto("wylo@ua.com",
