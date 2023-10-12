@@ -1,7 +1,25 @@
 version: "2.21.0"
 
 services:
-  app:
+  mysqlserver:
+    image: mysql
+    restart: always
+    env_file: ./.env
+    ports:
+      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DB
+    healthcheck:
+      test: [ $COMMAND_PROMPT, $MYSQL_PING_CHECK ]
+      timeout: 30s
+      start_period: 5s
+      interval: 5s
+      retries: 3
+
+  car-sharing-app:
     restart: on-failure
     env_file: ./.env
     depends_on:
@@ -20,21 +38,3 @@ services:
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
       - $DEBUG_PORT
-
-  mysqlserver:
-    image: mysql
-    restart: always
-    env_file: ./.env
-    ports:
-      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
-    environment:
-      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-      MYSQL_USER: $MYSQL_USER
-      MYSQL_PASSWORD: $MYSQL_PASSWORD
-      MYSQL_DATABASE: $MYSQL_DB
-    healthcheck:
-      test: [$COMMAND_PROMPT, $MYSQL_PING_CHECK]
-      timeout: 30s
-      start_period: 5s
-      interval: 5s
-      retries: 3
