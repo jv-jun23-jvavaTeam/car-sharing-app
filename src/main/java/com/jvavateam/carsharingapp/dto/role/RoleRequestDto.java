@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotNull;
 public record RoleRequestDto(
         @NotNull(message = "Status cannot be null")
         @Schema(description = "Role status", example = "CUSTOMER")
-        String status) {
+        String[] status) {
 }
 

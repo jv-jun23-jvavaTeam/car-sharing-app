@@ -11,9 +11,11 @@ import com.jvavateam.carsharingapp.model.User;
 import com.jvavateam.carsharingapp.repository.user.RoleRepository;
 import com.jvavateam.carsharingapp.repository.user.UserRepository;
 import com.jvavateam.carsharingapp.service.UserService;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,9 +39,10 @@ public class UserServiceImpl implements UserService {
     public void updateUserRole(Long id, RoleRequestDto role) {
         User userForRoleUpdating = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User with such ID doesn't exists"));
-        Role roleToUpdate = roleRepository.getRoleByName(Role.RoleName.valueOf(role.status()));
-        HashSet<Role> roles = new HashSet<>();
-        roles.add(roleToUpdate);
+        HashSet<Role> roles = (HashSet<Role>) Arrays.stream(role.status())
+                .map(Role.RoleName::valueOf)
+                .map(roleRepository::getRoleByName)
+                .collect(Collectors.toSet());
         userForRoleUpdating.setRoles(roles);
         userRepository.save(userForRoleUpdating);
     }
@@ -48,7 +51,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto updateUserInfo(UserRequestDto userRequestDto) {
         User userForInfoUpdating = userMapper.toModel(userRequestDto);
+        userForInfoUpdating.setPassword(passwordEncoder.encode(userRequestDto.password()));
         userForInfoUpdating.setId(userRepository.getCurrentUser().getId());
+        userForInfoUpdating.setRoles(userRepository.getCurrentUser().getRoles());
         return userMapper.toDto(userRepository.save(userForInfoUpdating));
     }
 
