@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
     @GetMapping("/check")
     public String check() {
-        return "All good!";
+        return "The car rental application is running stably";
     }
 }

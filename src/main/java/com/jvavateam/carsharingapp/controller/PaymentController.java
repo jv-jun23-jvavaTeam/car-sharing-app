@@ -57,7 +57,7 @@ public class PaymentController {
     @Operation(summary = "Retrieving all paused payments",
             description = "Retrieving all paused payments for current user")
     public List<PaymentResponseDto> getAllSuccessfulPayments() {
-        return paymentService.getAllPausedPayments();
+        return paymentService.getAllPaused();
     }
 
     @GetMapping("/successful")
@@ -65,18 +65,20 @@ public class PaymentController {
     @Operation(summary = "Retrieving all successful payments",
             description = "Retrieving all successful payments for current user")
     public List<PaymentResponseDto> getAllPausedPayments() {
-        return paymentService.getAllSuccessfulPayments();
+        return paymentService.getAllSuccessful();
     }
 
-    @GetMapping("/success/")
+    @GetMapping("/success")
     public PaymentOperationMessage successful(@RequestParam String sessionId) {
-        paymentService.updatePaymentStatus(sessionId);
+        paymentService.updateStatus(sessionId);
         return new PaymentOperationMessage("Payment " + sessionId + " successfully provided!");
     }
 
     @GetMapping("/cancel")
     public PaymentOperationMessage error() {
-        return new PaymentOperationMessage("Payment cancelled! You can try again later. "
-                + "The session will be open for 24hours.");
+        return new PaymentOperationMessage(
+                "Payment cancelled! You can try again later. "
+                + "The session will be open for 24hours."
+        );
     }
 }
