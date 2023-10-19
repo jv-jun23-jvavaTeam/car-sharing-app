@@ -158,7 +158,7 @@ class PaymentRepositoryTest {
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAllForCurrentUser_PaymentsExist_ReturnListOfPayments() {
 
-        List<Payment> actual = paymentRepository.findAll();
+        List<Payment> actual = paymentRepository.findAllForCurrentUser();
 
         Assertions.assertEquals(List.of(PAYMENT_UNPAID, PAYMENT_PAID), actual);
     }

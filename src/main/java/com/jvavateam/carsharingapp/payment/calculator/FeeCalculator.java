@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 
 public class FeeCalculator implements TotalCalculator {
-    private static BigDecimal FEE_PERCENTAGE = BigDecimal.valueOf(0.10);
+    private static final BigDecimal FEE_PERCENTAGE = BigDecimal.valueOf(0.10);
 
     @Override
     public Long calculateTotal(Payment payment) {
@@ -14,8 +14,10 @@ public class FeeCalculator implements TotalCalculator {
             throw new PaymentException("The actual return date is null! Can't calculate fee!");
         }
 
-        long overdueDays = ChronoUnit.DAYS.between(payment.getRental().getReturnDate(),
-                payment.getRental().getActualReturnDate());
+        long overdueDays = ChronoUnit.DAYS.between(
+                payment.getRental().getReturnDate(),
+                payment.getRental().getActualReturnDate()
+        );
         BigDecimal total = payment.getRental().getCar().getDailyFee()
                 .multiply(FEE_PERCENTAGE)
                 .multiply(BigDecimal.valueOf(overdueDays));

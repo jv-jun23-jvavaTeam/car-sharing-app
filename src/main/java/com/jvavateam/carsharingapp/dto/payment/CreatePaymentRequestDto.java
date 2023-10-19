@@ -1,7 +1,7 @@
 package com.jvavateam.carsharingapp.dto.payment;
 
+import com.jvavateam.carsharingapp.model.Payment;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.experimental.Accessors;
@@ -12,8 +12,8 @@ public record CreatePaymentRequestDto(
         @Positive(message = "Rental ID must be not negative")
         @Schema(description = "Rental ID", example = "1")
         Long rentalId,
-        @NotEmpty(message = "Payment type can not be empty")
+        @NotNull(message = "Payment type can not be null")
         @Schema(description = "Payment type", example = "PAYMENT")
-        String paymentType
+        Payment.Type paymentType
 ) {
 }

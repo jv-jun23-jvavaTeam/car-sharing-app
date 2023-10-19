@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jvavateam.carsharingapp.dto.payment.CreatePaymentRequestDto;
 import com.jvavateam.carsharingapp.dto.payment.PaymentResponseDto;
 import com.jvavateam.carsharingapp.model.Car;
+import com.jvavateam.carsharingapp.model.Payment;
 import com.jvavateam.carsharingapp.model.Rental;
 import com.jvavateam.carsharingapp.model.Role;
 import com.jvavateam.carsharingapp.model.User;
@@ -127,13 +128,13 @@ class PaymentControllerTest {
     private static final CreatePaymentRequestDto CREATE_PAYMENT_DTO =
             new CreatePaymentRequestDto(
                     100L,
-                    "PAYMENT"
+                    Payment.Type.PAYMENT
             );
     private static final PaymentResponseDto PAYMENT_RESPONSE_DTO_UNPAID_PAYMENT =
             new PaymentResponseDto(
                     1L,
-                    "PENDING",
-                    "PAYMENT",
+                    Payment.Status.PENDING,
+                    Payment.Type.PAYMENT,
                     VALID_SESSION_URL,
                     VALID_SESSION_ID,
                     VALID_RENTAL.getId(),
@@ -142,8 +143,8 @@ class PaymentControllerTest {
     private static final PaymentResponseDto PAYMENT_RESPONSE_DTO_PAID_PAYMENT =
             new PaymentResponseDto(
                     2L,
-                    "PAID",
-                    "PAYMENT",
+                    Payment.Status.PAID,
+                    Payment.Type.PAYMENT,
                     VALID_SESSION_URL,
                     VALID_SESSION_ID,
                     VALID_RENTAL_TWO.getId(),
@@ -323,7 +324,7 @@ class PaymentControllerTest {
     public void successful_ReturnsSuccessfulMessage() throws Exception {
         String sessionId = "VALID_SESSION_ID";
 
-        mockMvc.perform(get("/payments/success/")
+        mockMvc.perform(get("/payments/success")
                         .param("sessionId", sessionId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message")

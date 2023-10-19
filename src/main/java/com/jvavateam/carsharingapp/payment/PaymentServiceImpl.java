@@ -69,7 +69,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final UserService userService;
     private final NotificationService notificationService;
-    private TotalCalculator calculator;
 
     @Value("${base.api.url}")
     private String baseApiUrl;
@@ -82,7 +81,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto> getAllForCurrentUser() {
-        return paymentRepository.findAll().stream()
+        return paymentRepository.findAllForCurrentUser().stream()
                 .map(paymentMapper::toDto)
                 .toList();
     }
@@ -110,17 +109,17 @@ public class PaymentServiceImpl implements PaymentService {
 
         Session session = createSession(payment);
 
-        payment.setSessionUrl(session.getUrl());
-        payment.setSessionId(session.getId());
-        payment.setStatus(Payment.Status.PENDING);
-        payment.setAmountToPay(BigDecimal.valueOf(countTotal(payment)));
+        payment.setSessionUrl(session.getUrl())
+                .setSessionId(session.getId())
+                .setStatus(Payment.Status.PENDING)
+                .setAmountToPay(BigDecimal.valueOf(countTotal(payment)));
+
         paymentRepository.save(payment);
-        PaymentResponseDto responseDto = paymentMapper.toDto(payment);
-        return responseDto;
+        return paymentMapper.toDto(payment);
     }
 
     @Override
-    public List<PaymentResponseDto> getAllSuccessfulPayments() {
+    public List<PaymentResponseDto> getAllSuccessful() {
         return paymentRepository.findAllByStatus(Payment.Status.PAID)
                 .stream()
                 .map(paymentMapper::toDto)
@@ -128,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<PaymentResponseDto> getAllPausedPayments() {
+    public List<PaymentResponseDto> getAllPaused() {
         return paymentRepository.findAllByStatus(Payment.Status.PENDING)
                 .stream()
                 .map(paymentMapper::toDto)
@@ -136,7 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void updatePaymentStatus(String sessionId) {
+    public void updateStatus(String sessionId) {
         Payment payment = getPaymentBySessionId(sessionId);
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
@@ -156,16 +155,17 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private Payment getPaymentBySessionId(String sessionId) {
-        Payment payment = paymentRepository.findBySessionId(sessionId)
+        return paymentRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Can't find payment by session id: " + sessionId));
-        return payment;
+                        "Can't find payment by session id: " + sessionId
+                ));
     }
 
     private Rental getRentalById(Long id) {
-        Rental rental = rentalRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find rental by id: " + id));
-        return rental;
+        return rentalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find rental by id: " + id
+                ));
     }
 
     private Session createSession(Payment payment) {
@@ -187,13 +187,11 @@ public class PaymentServiceImpl implements PaymentService {
                                + "?sessionId={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(baseApiUrl + apiCancelEndpoint)
                 .build();
-        Session session = null;
         try {
-            session = Session.create(sessionCreateParams);
+            return Session.create(sessionCreateParams);
         } catch (StripeException e) {
-            throw new PaymentException("Session " + session.getId() + " creation went wrong!");
+            throw new PaymentException("Session creation went wrong!", e);
         }
-        return session;
     }
 
     private Price getPrice(Product product, Payment payment) {
@@ -202,13 +200,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .setProduct(product.getId())
                 .setUnitAmount(countTotal(payment) * PRICE_MULTIPLIER)
                 .build();
-        Price price = null;
         try {
-            price = Price.create(priceParams);
+            return Price.create(priceParams);
         } catch (StripeException e) {
-            throw new PaymentException("Price " + price.getId() + " creation went wrong!");
+            throw new PaymentException("Price creation went wrong!", e);
         }
-        return price;
     }
 
     private Product getProduct(Payment payment) {
@@ -219,39 +215,44 @@ public class PaymentServiceImpl implements PaymentService {
                         .setCurrency(CURRENCY_NAME)
                         .build())
                 .build();
-        Product product = new Product();
         try {
-            product = Product.create(productParams);
+            return Product.create(productParams);
         } catch (StripeException e) {
-            throw new PaymentException("Product " + product.getId() + " creation went wrong!");
+            throw new PaymentException("Product creation went wrong!", e);
         }
-        return product;
     }
 
     private void checkRentalDates(Rental rental) {
         if (rental.getReturnDate() == null) {
-            throw new PaymentException("You can't carry out payment if return date is null!");
+            throw new PaymentException(
+                    "You can't carry out payment if return date is null!"
+            );
         }
     }
 
-    private void existsPendingPayment(String type) {
-        boolean check = paymentRepository.findAll().stream()
+    private void existsPendingPayment(Payment.Type type) {
+        boolean check = paymentRepository.findAllForCurrentUser()
+                .stream()
                 .anyMatch(payment -> payment.getStatus().equals(Payment.Status.PENDING)
-                                     && payment.getType().name().equals(type));
+                                     && payment.getType().equals(type)
+                );
         if (check) {
             throw new PaymentException(
-                    "You have  unpaid payments! New payment can not be created!");
+                    "You have unpaid payments! New payment can not be created!"
+            );
         }
     }
 
     private void existsPaymentForRental(Rental rental, Payment payment) {
-        boolean check = paymentRepository.findAll().stream()
+        boolean check = paymentRepository.findAllForCurrentUser().stream()
                 .anyMatch(p -> p.getRental().equals(rental)
                                && p.getType().equals(payment.getType()));
         if (check) {
             throw new PaymentException(
-                    "You have already payment with type " + payment.getType()
-                    + " for this rental! New payment can not be created!");
+                    "You have already payment with type "
+                    + payment.getType()
+                    + " for this rental! New payment can not be created!"
+            );
         }
     }
 
@@ -260,7 +261,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private Long countTotal(Payment payment) {
-        calculator = PaymentCalculationsHandler.getCalculator(payment);
+        TotalCalculator calculator = PaymentCalculationsHandler.getCalculator(payment);
         return calculator.calculateTotal(payment);
     }
 
