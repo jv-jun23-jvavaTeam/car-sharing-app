@@ -99,13 +99,13 @@ class PaymentServiceImplTest {
     private static final CreatePaymentRequestDto CREATE_PAYMENT_DTO =
             new CreatePaymentRequestDto(
                     100L,
-                    "PAYMENT"
+                    Payment.Type.PAYMENT
             );
     private static final PaymentResponseDto PAYMENT_RESPONSE_DTO_UNPAID_PAYMENT =
             new PaymentResponseDto(
                     1L,
-                    "PENDING",
-                    "PAYMENT",
+                    Payment.Status.PENDING,
+                    Payment.Type.PAYMENT,
                     VALID_SESSION_URL,
                     VALID_SESSION_ID,
                     VALID_RENTAL.getId(),
@@ -139,7 +139,7 @@ class PaymentServiceImplTest {
         when(paymentRepository.findBySessionId(INVALID_SESSION_ID)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class,
-                () -> paymentService.updatePaymentStatus(INVALID_SESSION_ID));
+                () -> paymentService.updateStatus(INVALID_SESSION_ID));
 
         String expected = "Can't find payment by session id: " + INVALID_SESSION_ID;
         String actual = exception.getMessage();
@@ -155,7 +155,7 @@ class PaymentServiceImplTest {
         when(paymentRepository.findAllByStatus(Payment.Status.PAID))
                 .thenReturn(List.of(PAYMENT_PAID));
 
-        List<PaymentResponseDto> actual = paymentService.getAllSuccessfulPayments();
+        List<PaymentResponseDto> actual = paymentService.getAllSuccessful();
 
         assertEquals(1, actual.size());
         verify(paymentRepository, times(1)).findAllByStatus(Payment.Status.PAID);
@@ -168,7 +168,7 @@ class PaymentServiceImplTest {
         when(paymentRepository.findAllByStatus(Payment.Status.PENDING))
                 .thenReturn(List.of(PAYMENT_UNPAID));
 
-        List<PaymentResponseDto> actual = paymentService.getAllPausedPayments();
+        List<PaymentResponseDto> actual = paymentService.getAllPaused();
 
         assertEquals(1, actual.size());
         verify(paymentRepository, times(1)).findAllByStatus(Payment.Status.PENDING);

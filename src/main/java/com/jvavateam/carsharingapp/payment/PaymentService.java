@@ -11,9 +11,9 @@ public interface PaymentService {
 
     PaymentResponseDto create(CreatePaymentRequestDto requestDto);
 
-    List<PaymentResponseDto> getAllSuccessfulPayments();
+    List<PaymentResponseDto> getAllSuccessful();
 
-    List<PaymentResponseDto> getAllPausedPayments();
+    List<PaymentResponseDto> getAllPaused();
 
-    void updatePaymentStatus(String sessionId);
+    void updateStatus(String sessionId);
 }

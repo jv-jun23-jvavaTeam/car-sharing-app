@@ -12,5 +12,6 @@ public interface CarMapper {
     CarDtoResponse toDto(Car car);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Car toEntity(CarDtoRequest carDto);
 }
