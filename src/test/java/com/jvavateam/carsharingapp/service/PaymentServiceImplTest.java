@@ -1,4 +1,4 @@
-package com.jvavateam.carsharingapp.service.payment;
+package com.jvavateam.carsharingapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,7 +51,7 @@ class PaymentServiceImplTest {
 
     private static final Car VALID_CAR = new Car()
             .setId(100L)
-            .setModel("Toyota")
+            .setBrand("Toyota")
             .setModel("Camry")
             .setType(Car.Type.SEDAN)
             .setInventory(11)
@@ -124,7 +124,7 @@ class PaymentServiceImplTest {
     @Test
     @DisplayName("Verify the creation of Payment from CreatePaymentRequestDto "
             + "with not existing rental id")
-    public void create_NotExistingPaymentId_ThrowsException() {
+    public void create_notExistingPaymentId_ThrowsException() {
         when(rentalRepository.findById(any(Long.class))).thenReturn(Optional.empty());
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> paymentService.create(CREATE_PAYMENT_DTO));
@@ -133,21 +133,9 @@ class PaymentServiceImplTest {
         verifyNoMoreInteractions(rentalRepository);
     }
 
-    /*@Test
-    @DisplayName("Verify update of Payment status")
-    public void update_ExistingSessionId_ShouldChangeStatusOfPaymentToPaid() {
-        when(paymentRepository.findBySessionId(VALID_SESSION_ID))
-                .thenReturn(Optional.of(PAYMENT_UNPAID));
-        when(userService.findAllManagers()).thenReturn(Collections.emptyList());
-        paymentService.updatePaymentStatus(VALID_SESSION_ID);
-        Payment payment = PAYMENT_UNPAID;
-        payment.setStatus(Payment.Status.PAID);
-        verify(paymentRepository, times(1)).save(PAYMENT_UNPAID);
-    }*/
-
     @Test
     @DisplayName("Verify update of Payment status throws exception")
-    public void update_NonExistingSessionId_ThrowsException() {
+    public void update_nonExistingSessionId_ThrowsException() {
         when(paymentRepository.findBySessionId(INVALID_SESSION_ID)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class,
@@ -163,7 +151,7 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("Verify retrieving all succesful payments for current user")
-    public void getAllSuccesfull_ShouldReturnAllPaidPayments() {
+    public void getAllSuccesfull_shouldReturnAllPaidPayments() {
         when(paymentRepository.findAllByStatus(Payment.Status.PAID))
                 .thenReturn(List.of(PAYMENT_PAID));
 
@@ -176,7 +164,7 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("Verify retrieving all paused payments for current user")
-    public void getAllPaused_ShouldReturnAllPendingPayments() {
+    public void getAllPaused_shouldReturnAllPendingPayments() {
         when(paymentRepository.findAllByStatus(Payment.Status.PENDING))
                 .thenReturn(List.of(PAYMENT_UNPAID));
 
@@ -189,7 +177,7 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("Verify retrieving all payments for certain user by user id")
-    public void getAllByUserId_ShouldReturnAllPaymentsForCertainUser() {
+    public void getAllByUserId_shouldReturnAllPaymentsForCertainUser() {
         when(paymentRepository.findAllByRentalUserId(VALID_USER_CUSTOMER.getId()))
                 .thenReturn(List.of(PAYMENT_UNPAID));
         when(paymentMapper.toDto(any(Payment.class)))
@@ -202,7 +190,7 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("Verify retrieving all payments for current user")
-    public void getAll_ShouldReturnAllPaymentsForCurrentUser() {
+    public void getAll_shouldReturnAllPaymentsForCurrentUser() {
         when(paymentRepository.findAllByRentalUserId(VALID_USER_CUSTOMER.getId()))
                 .thenReturn(List.of(PAYMENT_UNPAID));
 
